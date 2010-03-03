@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Snowflake</title>
+		<link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="/static/no/iterate/snowflake/views/snowflake.css" />
+	</head>
+	<body>
+		<div id="doc" class="yui-t7">
+
+
+			<div id="hd" role="navigation">
+				<h1>Edit Shopping Item</h1>
+			</div>
+			<div id="bd" role="main">
+				<div class="yui-g">
+					<form method="post" action="/shopping/save">
+						<fieldset>
+							<p>
+								<label for="id">id</label>
+								<input type="text" name="id" value="1" />
+							</p>
+							<p>
+								<label for="quantity">quantity</label>
+								<input type="text" name="quantity" value="0" />
+								<span class="validationerror">Zero not allowed</span>
+							</p>
+							<p>
+								<label for="category">category</label>
+								<select name="category">
+									<option value="VEGETABLES">VEGETABLES</option>
+
+									<option value="SEAFOOD">SEAFOOD</option>
+									<option selected="selected" value="MEAT">MEAT</option>
+									<option value="DIARY">DIARY</option>
+									<option value="CANDY">CANDY</option>
+									<option value="OTHER">OTHER</option>
+								</select>
+							</p>
+
+							<p>
+								<label for="description">description</label>
+								<input type="text" name="description" value="Entrecote" />
+							</p>
+							<p>
+								<label for="submit">&nbsp;
+								</label>
+								<input type="submit" />
+							</p>
+						</fieldset>
+					</form>
+				</div>
+			</div>
+			<div id="ft" role="complementary">
+				<p>Powered by Snowflake MVC</p>
+			</div>
+		</div>
+
+	</body>
+</html>

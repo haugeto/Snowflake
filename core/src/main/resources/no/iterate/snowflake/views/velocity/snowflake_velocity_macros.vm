@@ -1,0 +1,10 @@
+#macro(options $value $choices)
+    #foreach($choice in $choices)
+        #if ($value == $choice) 
+            #set($selected = 'selected="selected"')
+        #else
+            #set($selected = "") 
+        #end
+        <option $selected value="$choice">$choice</option>
+    #end
+#end
