@@ -1,0 +1,67 @@
+#doc { 
+    font-family:Georgia;
+}
+
+#hd h1 { 
+    padding-top:4em;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    font-size: 2.0em;
+    font-weight: bold;
+    /*border-bottom: 0.1em solid; 
+    padding-bottom : 0.3em;
+    padding-left : 0.1em;*/
+}
+
+#bd form {
+    border-size : 1pt;
+}
+ 
+#bd fieldset {
+    border: 1px solid;
+    padding : 1em;
+}
+
+#bd form p {
+    margin: 0.8em;
+} 
+
+#bd label {
+    width: 20%;
+    float: left;
+    text-align: right;
+    margin-right: 0.5em;
+    display: block
+}
+
+
+#bd table { 
+    width: 100%;
+    padding: 0.4em;
+}
+
+#bd table th {
+    padding: 0.4em;
+    font-weight: bold;
+}
+
+#bd table td {
+    padding: 0.4em;
+}
+
+#bd p {
+    margin-top : 1em;
+}
+
+#ft {
+    margin-top:2em;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+    font-size : 0.8em;
+}
+
+.validationerror {
+    color : #F00;
+    margin-left : 0.5em;
+}
