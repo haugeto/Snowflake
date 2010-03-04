@@ -23,8 +23,8 @@ import org.snowflake.utils.Console;
  * instance, the template for the index method of this class would be in the
  * class path as "org/shoppingassistant/ShoppingAssistant.index.vm".
  * 
- * To look at or save generated template code, "help" in the Java console were
- * Snowflake is running and follow the instructions.
+ * To look at or save generated template code, type "help" and hit enter in the
+ * Java console where Snowflake is running, and follow the instructions.
  * 
  * @author haugeto
  */
