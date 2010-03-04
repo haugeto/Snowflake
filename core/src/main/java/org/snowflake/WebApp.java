@@ -148,8 +148,19 @@ public class WebApp {
         this.name = name;
     }
 
+    /**
+     * Add a RequestInterceptor that will be given the chance to pre- and post
+     * process a request to the application.
+     */
+    public void addRequestInterceptor(RequestInterceptor requestInterceptor) {
+        this.requestInterceptors.add(requestInterceptor);
+    }
+
+    /**
+     * Get a copy of the request interceptors currently registered.
+     */
     public List<RequestInterceptor> getRequestInterceptors() {
-        return requestInterceptors;
+        return new ArrayList<RequestInterceptor>(this.requestInterceptors);
     }
 
 }

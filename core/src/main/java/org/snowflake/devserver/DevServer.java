@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
-import org.snowflake.RequestInterceptor;
 import org.snowflake.SnowflakeException;
 import org.snowflake.StaticContentController;
 import org.snowflake.WebApp;
@@ -124,10 +123,6 @@ public class DevServer extends WebApp {
 
     public int getPort() {
         return port;
-    }
-
-    public void addRequestInterceptor(RequestInterceptor requestInterceptor) {
-        this.requestInterceptors.add(requestInterceptor);
     }
 
 }
