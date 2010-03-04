@@ -8,3 +8,12 @@
         <option $selected value="$choice">$choice</option>
     #end
 #end
+
+#macro(checkbox $name $value)
+    #if ($value == true)
+        #set($checked = 'checked="checked"')
+    #else
+        #set($checked = '')
+    #end
+<input type="checkbox" name="$name" value="true" $checked />
+#end

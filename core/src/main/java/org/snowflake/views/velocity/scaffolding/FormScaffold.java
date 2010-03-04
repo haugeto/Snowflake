@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.Answer;
 import org.snowflake.SnowflakeException;
@@ -20,7 +19,7 @@ import org.snowflake.views.scaffolding.ScaffoldingHelper;
 public class FormScaffold implements Scaffold {
 
     final static FormFieldTemplateGenerator[] DEFAULT_GENERATORS = { new TextInputGenerator(),
-            new SelectInputGenerator() };
+            new SelectInputGenerator(), new CheckboxInputGenerator() };
 
     List<FormFieldTemplateGenerator> generators = new ArrayList<FormFieldTemplateGenerator>(Arrays
             .asList(DEFAULT_GENERATORS));

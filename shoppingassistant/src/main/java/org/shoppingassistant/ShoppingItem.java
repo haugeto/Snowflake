@@ -10,6 +10,8 @@ public class ShoppingItem {
 
     String description;
 
+    boolean niceToHave = false;
+
     public ShoppingItem() {
 
     }
@@ -51,6 +53,14 @@ public class ShoppingItem {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public boolean getNiceToHave() {
+        return niceToHave;
+    }
+
+    public void setNiceToHave(boolean niceToHave) {
+        this.niceToHave = niceToHave;
     }
 
 }

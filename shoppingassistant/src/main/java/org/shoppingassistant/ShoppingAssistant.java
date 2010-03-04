@@ -90,7 +90,9 @@ public class ShoppingAssistant {
      *            method is invoked; business logic data validation takes place
      *            in the save method.
      */
-    public void save(ShoppingItem shoppingItem) {
+    public void save(Question question, ShoppingItem shoppingItem) {
+        Console.println(question.toString());
+
         if (shoppingItem.getQuantity() == 0) {
             throw new ValidationException("quantity", "Zero not allowed");
         }

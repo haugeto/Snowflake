@@ -8,7 +8,7 @@ package org.snowflake.fieldconverters;
 public interface FieldConverter {
 
     public static final FieldConverter[] DEFAULT_CONVERTERS = { new StringConverter(), new IntegerConverter(),
-            new EnumConverter(), new DateConverter() };
+            new BooleanConverter(), new EnumConverter(), new DateConverter() };
 
     /**
      * Tell whether this FieldConverter can handle the specified type
