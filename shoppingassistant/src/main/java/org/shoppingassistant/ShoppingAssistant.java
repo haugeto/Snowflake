@@ -6,10 +6,8 @@ import java.util.Map;
 
 import org.snowflake.Answer;
 import org.snowflake.Question;
+import org.snowflake.RequestInterceptor;
 import org.snowflake.ValidationException;
-import org.snowflake.WebMethod;
-import org.snowflake.WebPage;
-import org.snowflake.WebRequest;
 import org.snowflake.devserver.DevServer;
 
 public class ShoppingAssistant {
@@ -65,24 +63,18 @@ public class ShoppingAssistant {
     }
 
     public static void main(String[] args) throws Exception {
-        DevServer devServer = new DevServer("Shopping Assistant", 3000) {
+        DevServer devServer = new DevServer("Shopping Assistant", 3000);
+        devServer.addRequestInterceptor(new RequestInterceptor() {
+            @Override
+            public void before(Question question, Answer answer) throws Exception {
+                System.out.println("RequestInterceptor.Before: " + question);
+            }
 
             @Override
-            public WebRequest createWebRequest(WebPage webPage, WebMethod webMethod, Question question, Answer answer) {
-                return new WebRequest(this, webPage, webMethod, question, answer) {
-
-                    @Override
-                    public void before(Question question, Answer answer) throws Exception {
-                        System.out.println("Before: " + question);
-                    }
-
-                    @Override
-                    public void after(Question question, Answer answer) throws Exception {
-                        System.out.println("After: " + answer);
-                    }
-                };
+            public void after(Question question, Answer answer) throws Exception {
+                System.out.println("RequestInterceptor.After: " + answer);
             }
-        };
+        });
         devServer.registerController("shopping", new ShoppingAssistant());
         devServer.run();
     }

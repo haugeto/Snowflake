@@ -43,32 +43,6 @@ public class WebRequest {
         this.answer = answer;
     }
 
-    /**
-     * Invoked before a request is processed (default implementation does
-     * nothing)
-     * 
-     * @param question
-     *            The request
-     * @param answer
-     *            The response
-     */
-    public void before(Question question, Answer answer) throws Exception {
-
-    }
-
-    /**
-     * Invoked after a request is processed (default implementation does
-     * nothing)
-     * 
-     * @param question
-     *            The request
-     * @param answer
-     *            The response
-     */
-    public void after(Question question, Answer answer) throws Exception {
-
-    }
-
     public void delegateToController() throws SnowflakeException {
         ViewHints viewHints = answer.getViewHints();
         for (WebMethod webMethod : webPage.rowActionWebMethods()) {

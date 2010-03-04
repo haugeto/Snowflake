@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.Answer;
 import org.snowflake.Question;
+import org.snowflake.RequestInterceptor;
 import org.snowflake.SnowflakeException;
 import org.snowflake.WebMethod;
 import org.snowflake.WebPage;
@@ -44,7 +45,9 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
             Answer answer = webMethod.createAnswer();
             WebRequest webRequest = webApp.createWebRequest(webPage, webMethod, question, answer);
             try {
-                webRequest.before(question, answer);
+                for (RequestInterceptor requestInterceptor : webApp.getRequestInterceptors()) {
+                    requestInterceptor.before(question, answer);
+                }
                 processController(webRequest);
                 sendSuccessfulResponseHeaders(exchange, webRequest.getAnswer());
                 processViewOnSuccess(webRequest, exchange.getResponseBody());
@@ -52,9 +55,10 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
             } catch (SnowflakeException e) {
                 sendFailureResponseHeaders(exchange, webRequest.getAnswer());
                 processViewOnFailure(webRequest, exchange.getResponseBody(), e);
-            }
-            finally {
-                webRequest.after(question, answer);
+            } finally {
+                for (RequestInterceptor requestInterceptor : webApp.getRequestInterceptors()) {
+                    requestInterceptor.after(question, answer);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

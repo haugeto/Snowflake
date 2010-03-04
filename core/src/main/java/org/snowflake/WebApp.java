@@ -41,6 +41,8 @@ public class WebApp {
 
     protected final List<FieldConverter> fieldConverters = new ArrayList<FieldConverter>();
 
+    protected final List<RequestInterceptor> requestInterceptors = new ArrayList<RequestInterceptor>();
+
     protected ViewFactory viewFactory = new VelocityViewFactory(this);
 
     protected String name;
@@ -144,6 +146,10 @@ public class WebApp {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<RequestInterceptor> getRequestInterceptors() {
+        return requestInterceptors;
     }
 
 }
