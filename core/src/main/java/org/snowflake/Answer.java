@@ -10,8 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.snowflake.utils.ReflectionHelpers;
-
 
 /**
  * Represents the answer a web controller emits to the client on an HTTP
@@ -52,6 +53,8 @@ public class Answer {
     String viewForMethod;
 
     Long contentLength;
+
+    String title;
 
     Integer httpCode = WebRequest.HTTP_OK;
 
@@ -243,6 +246,21 @@ public class Answer {
 
     public void setValidationErrors(Map<String, String> validationErrors) {
         this.validationErrors = validationErrors;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("httpCode", this.httpCode).append(
+                "contentType", this.contentType).append("formDataType", this.formDataType).append("indexDataObjects",
+                this.hasIndexData() ? this.indexData.size() : 0).append("templateFile", this.templateFile).append(
+                "title", this.title).append("templateVariables", this.templateVariables).toString();
     }
 
 }

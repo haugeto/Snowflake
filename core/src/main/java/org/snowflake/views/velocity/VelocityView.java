@@ -11,7 +11,6 @@ import java.io.Writer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -20,7 +19,6 @@ import org.snowflake.InputOptions;
 import org.snowflake.WebMethod;
 import org.snowflake.utils.CollectionHelpers;
 import org.snowflake.views.View;
-
 
 public class VelocityView implements View {
 
@@ -53,6 +51,7 @@ public class VelocityView implements View {
             OutputStreamWriter mainContent = new OutputStreamWriter(out);
             VelocityContext layoutContext = new VelocityContext(viewContext);
             layoutContext.put("view_content", viewContent.toString());
+            layoutContext.put("view_title", answer.getTitle());
             mainTemplate.merge(layoutContext, mainContent);
             mainContent.flush();
         }

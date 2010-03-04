@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Map;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.Answer;
 import org.snowflake.Question;
@@ -42,9 +41,10 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
         Console.justify(exchange.getRequestMethod() + " " + exchange.getRequestURI(), "=> " + webMethod.toString());
         try {
             Question question = parseRequest(exchange);
-            WebRequest webRequest = new WebRequest(webApp, webPage, webMethod, question, webMethod
-                    .createAnswer());
+            Answer answer = webMethod.createAnswer();
+            WebRequest webRequest = webApp.createWebRequest(webPage, webMethod, question, answer);
             try {
+                webRequest.before(question, answer);
                 processController(webRequest);
                 sendSuccessfulResponseHeaders(exchange, webRequest.getAnswer());
                 processViewOnSuccess(webRequest, exchange.getResponseBody());
@@ -52,6 +52,9 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
             } catch (SnowflakeException e) {
                 sendFailureResponseHeaders(exchange, webRequest.getAnswer());
                 processViewOnFailure(webRequest, exchange.getResponseBody(), e);
+            }
+            finally {
+                webRequest.after(question, answer);
             }
         } catch (Exception e) {
             e.printStackTrace();

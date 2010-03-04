@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.snowflake.utils.Console;
 
-
 /**
  * <p>
  * Integration point when implementing Snowflake support for an application
@@ -109,8 +108,7 @@ public abstract class WebRequestDispatcher {
         answer.setValidationErrors(validationException.getErrorMessages());
         Question question = new Question();
         question.setId(failedQuestion.getId());
-        WebRequest showFormRequest = new WebRequest(webApp, webPage, showFormMethod, question,
-                answer);
+        WebRequest showFormRequest = webApp.createWebRequest(webPage, showFormMethod, question, answer);
         showFormRequest.delegateToView(responseBody);
     }
 

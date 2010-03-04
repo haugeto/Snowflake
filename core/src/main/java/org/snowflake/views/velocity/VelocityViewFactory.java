@@ -14,9 +14,9 @@ import org.snowflake.views.ViewFactory;
 
 public class VelocityViewFactory extends ViewFactory {
 
-    public static final String DEFAULT_LAYOUT_TEMPLATE = "no/iterate/snowflake/views/velocity/default_layout.vm";
+    public static final String DEFAULT_LAYOUT_TEMPLATE = "org/snowflake/views/velocity/default_layout.vm";
 
-    public static final String SNOWFLAKE_VELOCITY_MACROS = "no/iterate/snowflake/views/velocity/snowflake_velocity_macros.vm";
+    public static final String SNOWFLAKE_VELOCITY_MACROS = "org/snowflake/views/velocity/snowflake_velocity_macros.vm";
 
     VelocityEngine velocityEngine;
 

@@ -23,14 +23,14 @@ public class SmokeTest {
 
     @Before
     public void setUp() throws Exception {
-        devServer = new DevServer(DevServer.DEFAULT_PORT + 1);
+        devServer = new DevServer("", DevServer.DEFAULT_PORT + 1);
         devServer.run();
     }
 
     @Test
     public void testHttpGet() throws HttpException, IOException {
         HttpClient client = new HttpClient();
-        HttpMethod method = new GetMethod("http://localhost:" + devServer.getPort() + "/static/no/iterate/snowflake/views/snowflake.css");
+        HttpMethod method = new GetMethod("http://localhost:" + devServer.getPort() + "/static/org/snowflake/snowflake.css");
         client.executeMethod(method);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));

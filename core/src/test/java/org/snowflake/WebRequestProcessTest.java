@@ -33,7 +33,7 @@ public class WebRequestProcessTest {
     @Before
     public void setup() {
         callbackTestPage = new CallbackTestPage();
-        devServer = new DevServer();
+        devServer = new DevServer("");
         devServer.registerController("/", callbackTestPage);
         answer = new Answer();
         question = new Question();

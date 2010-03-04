@@ -1,9 +1,13 @@
 package org.snowflake;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 /**
  * Represents an HTTP request
@@ -16,15 +20,25 @@ public class Question {
 
     String url;
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     final Map<String, String> parameters = new LinkedHashMap<String, String>();
+
+    final Map<String, Object> attributes = new HashMap<String, Object>();
+
+    public void setAttribute(String name, Object value) {
+        this.attributes.put(name, value);
+    }
+
+    public Object removeAttribute(String name) {
+        return this.attributes.remove(name);
+    }
+
+    public void clearAttributes() {
+        this.attributes.clear();
+    }
+
+    public Map<String, Object> getAttributes() {
+        return new HashMap<String, Object>(this.attributes);
+    }
 
     public Map<String, String> getParameters() {
         return new LinkedHashMap<String, String>(parameters);
@@ -53,6 +67,19 @@ public class Question {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("url", url).append("id", id).append(
+                "parameters", parameters).append("attributes", attributes).toString();
     }
 
 }

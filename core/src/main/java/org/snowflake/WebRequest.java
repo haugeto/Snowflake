@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.fieldconverters.FieldConverter;
 import org.snowflake.fieldconverters.FieldValidationException;
@@ -44,6 +43,32 @@ public class WebRequest {
         this.answer = answer;
     }
 
+    /**
+     * Invoked before a request is processed (default implementation does
+     * nothing)
+     * 
+     * @param question
+     *            The request
+     * @param answer
+     *            The response
+     */
+    public void before(Question question, Answer answer) throws Exception {
+
+    }
+
+    /**
+     * Invoked after a request is processed (default implementation does
+     * nothing)
+     * 
+     * @param question
+     *            The request
+     * @param answer
+     *            The response
+     */
+    public void after(Question question, Answer answer) throws Exception {
+
+    }
+
     public void delegateToController() throws SnowflakeException {
         ViewHints viewHints = answer.getViewHints();
         for (WebMethod webMethod : webPage.rowActionWebMethods()) {
@@ -53,6 +78,7 @@ public class WebRequest {
             if (WebMethodType.INDEX != webMethod.getType())
                 viewHints.addPageAction(webPage.getController(), webMethod.getName());
         }
+        answer.setTitle(createTitle());
 
         Object[] args = buildArguments(question, answer);
         Object result;
@@ -119,7 +145,7 @@ public class WebRequest {
             if (httpArgType.isAssignableFrom(Map.class)) {
                 httpArg = question.getParameters();
             } else if (WebMethod.isCustomArgument(httpArgType)) {
-                httpArg = createPostDataObject();
+                httpArg = createPostDataObject(webMethod.getHttpArgType());
                 validateAndPopulate(question.getParameters(), httpArg);
                 // ReflectionHelpers.map2Fields(question.getParameters(),
                 // httpArg);
@@ -173,10 +199,24 @@ public class WebRequest {
             throw validationException;
     }
 
-    protected Object createPostDataObject() {
-        Object postData;
+    protected String createTitle() {
+        String title = webApp.getName();
+        if (webMethod.getType() != WebMethodType.INDEX) {
+            title += " - " + webMethod.getName();
+        }
+        return title;
+    }
+
+    /**
+     * Create the object that will be populated with data from HTML form
+     * 
+     * @param type
+     *            Type of object to be created
+     */
+    protected <T> T createPostDataObject(Class<T> type) {
+        T postData;
         try {
-            postData = webMethod.getHttpArgType().newInstance();
+            postData = type.newInstance();
         } catch (Exception e) {
             throw new SnowflakeException(e);
         }

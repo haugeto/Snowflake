@@ -32,11 +32,12 @@ public class DevServer extends WebApp {
 
     HttpServer httpServer;
 
-    public DevServer() {
-        this(DEFAULT_PORT);
+    public DevServer(String title) {
+        this(title, DEFAULT_PORT);
     }
 
-    public DevServer(int port) {
+    public DevServer(String title, int port) {
+        super(title);
         this.port = port;
     }
 

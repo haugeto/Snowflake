@@ -43,7 +43,14 @@ public class WebApp {
 
     protected ViewFactory viewFactory = new VelocityViewFactory(this);
 
+    protected String name;
+
     public WebApp() {
+        this("Snowflake");
+    }
+
+    public WebApp(String name) {
+        this.name = name;
         this.fieldConverters.addAll(Arrays.asList(FieldConverter.DEFAULT_CONVERTERS));
     }
 
@@ -125,6 +132,18 @@ public class WebApp {
                 return fieldConverter;
         }
         return null;
+    }
+
+    public WebRequest createWebRequest(WebPage webPage, WebMethod webMethod, Question question, Answer answer) {
+        return new WebRequest(this, webPage, webMethod, question, answer);
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
 }
