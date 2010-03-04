@@ -59,7 +59,7 @@ public class ShoppingAssistant {
     /**
      * A method with a custom return type will be recognized as a method for
      * rendering an HTML form. The form is populated with the contents of the
-     * returned type.
+     * returned object.
      */
     public ShoppingItem add() {
         ShoppingItem shoppingItem = new ShoppingItem();
@@ -68,7 +68,7 @@ public class ShoppingAssistant {
     }
 
     /**
-     * A method with a Integer parameter and a custom return type will be
+     * A method with an Integer parameter and a custom return type will be
      * recognized as an operation for showing the contents of an existing object
      * in an HTML form.
      * 
@@ -87,8 +87,8 @@ public class ShoppingAssistant {
      * @param shoppingItem
      *            This object has been populated with values from the HTML form.
      *            Basic data validation has already been taken care of as this
-     *            method is invoked. Business logic data validation takes place
-     *            in this method.
+     *            method is invoked; business logic data validation takes place
+     *            in the save method.
      */
     public void save(ShoppingItem shoppingItem) {
         if (shoppingItem.getQuantity() == 0) {
