@@ -65,7 +65,7 @@ public class WebPageTest {
     public void testCreateWebMethodsDoesntIncludeNonWebMethods() {
         WebPage webPage = new WebPage(new TestPage());
         Set<WebMethod> webMethods = webPage.webMethods;
-        assertEquals(6, webMethods.size());
+        assertEquals(7, webMethods.size());
         HashSet<String> methodNames = new HashSet<String>();
         for (WebMethod wm : webMethods) {
             methodNames.add(wm.getName());

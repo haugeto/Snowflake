@@ -5,7 +5,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.junit.Ignore;
 import org.snowflake.Answer;
 import org.snowflake.Question;
@@ -35,5 +34,8 @@ public class TestPage {
     }
 
     public void methodWithId(Answer answer, int id) {
+    }
+
+    public void methodWithTestDataObjectArg(TestDataObject testDataObject) {
     }
 }

@@ -59,6 +59,13 @@ public class Question {
     public void setParameters(Map<String, String> parameters) {
         this.parameters.clear();
         this.parameters.putAll(parameters);
+        if (parameters.containsKey("id")) {
+            String idStr = parameters.get("id");
+            try {
+                this.id = Integer.parseInt(idStr);
+            } catch (NumberFormatException e) {
+            }
+        }
     }
 
     public Integer getId() {

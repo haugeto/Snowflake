@@ -4,35 +4,19 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.snowflake.Answer;
 import org.snowflake.Question;
+import org.snowflake.RequestInterceptor;
 import org.snowflake.ValidationException;
 import org.snowflake.devserver.DevServer;
 import org.snowflake.utils.Console;
 
-/**
- * A very simple controller showing the core features of Snowflake. All HTML
- * code seen in a browser when running this application is auto generated. The
- * idea is that you as a web app developer should remain in Java scope for some
- * time during development, before it's time to do final tweaking of HTML code.
- * 
- * When you decide it IS time to tweak the generated HTML code, Snowflake can
- * save the generated template code to a file. Snowflake will discover your
- * custom template file if you follow the
- * "[package name].[class name].[method name].vm" naming convention: For
- * instance, the template for the index method of this class would be in the
- * class path as "org/shoppingassistant/ShoppingAssistant.index.vm".
- * 
- * To look at or save generated template code, type "help" and hit enter in the
- * Java console where Snowflake is running, and follow the instructions.
- * 
- * @author haugeto
- */
-public class ShoppingAssistant {
+public class AdvancedShoppingAssistant {
 
     Map<Integer, ShoppingItem> shoppingItems = new LinkedHashMap<Integer, ShoppingItem>();
 
-    public ShoppingAssistant() {
+    public AdvancedShoppingAssistant() {
         // Put a sample data object in our "database"
         shoppingItems.put(1, new ShoppingItem(1, ItemCategory.MEAT, "Entrecote", 2));
     }
@@ -51,7 +35,8 @@ public class ShoppingAssistant {
      * parameters, if any. See more examples of argument injection in methods
      * below.
      */
-    public Collection<ShoppingItem> index(Question question, Answer answer) {
+    public Collection<ShoppingItem> index(Question question, Answer answer, Session session) {
+        Console.println("index received: " + session);
         answer.setTitle("Welcome!");
         return shoppingItems.values();
     }
@@ -90,8 +75,9 @@ public class ShoppingAssistant {
      *            method is invoked; business logic data validation takes place
      *            in the save method.
      */
-    public void save(Question question, ShoppingItem shoppingItem) {
+    public void save(Question question, ShoppingItem shoppingItem, Session session) {
         Console.println(question.toString());
+        Console.println("Save received: " + session);
 
         if (shoppingItem.getQuantity() == 0) {
             throw new ValidationException("quantity", "Zero not allowed");
@@ -141,9 +127,37 @@ public class ShoppingAssistant {
      */
     public static void main(String[] args) throws Exception {
         DevServer devServer = new DevServer("Shopping Assistant", 3000);
+        devServer.addRequestInterceptor(new RequestInterceptorExample());
         // Register Controller at base URL "shopping":
         devServer.registerController("shopping", new ShoppingAssistant());
         devServer.run();
+    }
+
+    static class RequestInterceptorExample implements RequestInterceptor {
+
+        @Override
+        public void after(Question question, Answer answer, Object object) throws Exception {
+            Console.println("After: " + question + ": " + object);
+        }
+
+        @Override
+        public Object before(Question question, Answer answer) throws Exception {
+            return new Session("session1");
+        }
+
+    }
+
+    static class Session {
+
+        String name;
+
+        public Session(String name) {
+            this.name = name;
+        }
+
+        public String toString() {
+            return new ReflectionToStringBuilder(this).toString();
+        }
     }
 
 }

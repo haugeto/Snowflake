@@ -1,8 +1,8 @@
 package org.snowflake.fieldconverters;
 
-import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -10,7 +10,7 @@ public class DateConverter implements FieldConverter {
 
     @Override
     public boolean accepts(Class<?> type) {
-        return Date.class.equals(type);
+        return Date.class.isAssignableFrom(type);
     }
 
     @Override

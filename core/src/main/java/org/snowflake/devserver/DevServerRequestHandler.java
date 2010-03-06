@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,10 +47,12 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
         try {
             Question question = parseRequest(exchange);
             WebRequest webRequest = webApp.createWebRequest(webPage, webMethod, question, answer);
+            Map<RequestInterceptor, Object> customArgs = new HashMap<RequestInterceptor, Object>();
             try {
                 for (RequestInterceptor requestInterceptor : webApp.getRequestInterceptors()) {
-                    requestInterceptor.before(question, answer);
+                    customArgs.put(requestInterceptor, requestInterceptor.before(question, answer));
                 }
+                webRequest.setCustomArgs(new HashSet<Object>(customArgs.values()));
                 processController(webRequest);
                 sendSuccessfulResponseHeaders(exchange, webRequest.getAnswer());
                 processViewOnSuccess(webRequest, exchange.getResponseBody());
@@ -60,7 +64,7 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
                 processViewOnFailure(webRequest, exchange.getResponseBody(), e);
             } finally {
                 for (RequestInterceptor requestInterceptor : webApp.getRequestInterceptors()) {
-                    requestInterceptor.after(question, answer);
+                    requestInterceptor.after(question, answer, customArgs.get(requestInterceptor));
                 }
             }
         } catch (Throwable t) {

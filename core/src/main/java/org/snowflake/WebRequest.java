@@ -2,12 +2,13 @@ package org.snowflake;
 
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
+import org.snowflake.argumentinjection.ArgumentProducer;
+import org.snowflake.argumentinjection.ArgumentsBuilder;
 import org.snowflake.fieldconverters.FieldConverter;
 import org.snowflake.fieldconverters.FieldValidationException;
 import org.snowflake.utils.ReflectionHelpers;
@@ -21,7 +22,7 @@ import org.snowflake.views.View;
  * 
  * @author haugeto
  */
-public class WebRequest {
+public class WebRequest implements ArgumentProducer {
 
     public static final int HTTP_OK = 200;
 
@@ -34,6 +35,8 @@ public class WebRequest {
     WebPage webPage;
 
     WebApp webApp;
+
+    Set<Object> customArgs = new HashSet<Object>();
 
     public WebRequest(WebApp webApp, WebPage webPage, WebMethod webMethod, Question question, Answer answer) {
         this.webApp = webApp;
@@ -54,7 +57,7 @@ public class WebRequest {
         }
         answer.setTitle(createTitle());
 
-        Object[] args = buildArguments(question, answer);
+        Object[] args = new ArgumentsBuilder(this).buildArguments(webMethod.getMethod());
         Object result;
         try {
             result = webMethod.getMethod().invoke(webPage.getController(), args);
@@ -104,49 +107,32 @@ public class WebRequest {
         }
     }
 
-    Object[] buildArguments(Question question, Answer answer) throws SnowflakeException {
-        List<Object> result = new ArrayList<Object>();
-
-        if (webMethod.hasQuestionArg)
-            result.add(question);
-
-        if (webMethod.hasAnswerArg)
-            result.add(answer);
-
-        if (webMethod.hasHttpArg) {
-            Object httpArg;
-            Class<?> httpArgType = webMethod.getHttpArgType();
-            if (httpArgType.isAssignableFrom(Map.class)) {
-                httpArg = question.getParameters();
-            } else if (WebMethod.isCustomArgument(httpArgType)) {
-                httpArg = createPostDataObject(webMethod.getHttpArgType());
-                validateAndPopulate(question.getParameters(), httpArg);
-                // ReflectionHelpers.map2Fields(question.getParameters(),
-                // httpArg);
-            } else {
-                if (question.nrOfParameters() == 0) {
-                    if ((httpArgType.equals(Integer.class) || httpArgType.equals(int.class))
-                            && question.getId() != null) {
-                        httpArg = question.getId();
-                    } else {
-                        throw new SnowflakeException("Wrong number of HTTP parameters (expected 1, got "
-                                + question.nrOfParameters() + ")");
-                    }
-                } else {
-                    String httpArgStr = question.getParameterValues().get(0);
-                    httpArg = httpArgStr;
-                    if (httpArgType.equals(Integer.class) || httpArgType.equals(int.class)) {
-                        if (StringUtils.isEmpty(httpArgStr)) {
-                            httpArg = question.getId();
-                        } else {
-                            httpArg = Integer.parseInt(httpArgStr);
-                        }
-                    }
-                }
+    @Override
+    public Object getArgumentOfType(Class<?> type) {
+        for (Object customArg : this.customArgs) {
+            if (customArg != null && customArg.getClass() == type) {
+                return customArg;
             }
-            result.add(httpArg);
         }
-        return result.toArray();
+        if (type == Question.class)
+            return this.question;
+
+        if (type == Answer.class)
+            return this.answer;
+
+        if (Map.class.isAssignableFrom(type))
+            return question.getParameters();
+
+        if (type == Integer.class || type == int.class)
+            return question.getId();
+
+        if (WebMethod.isCustomArgument(type)) {
+            Object result = createPostDataObject(webMethod.getHttpArgType());
+            validateAndPopulate(question.getParameters(), result);
+            return result;
+        }
+
+        throw new IllegalArgumentException("Unable to create argument of type " + type);
     }
 
     protected void validateAndPopulate(Map<String, String> parameters, Object httpArg) throws ValidationException {
@@ -157,6 +143,9 @@ public class WebRequest {
             try {
                 Class<?> fieldType = publicFields.get(fieldName);
                 FieldConverter fieldConverter = webApp.findConverterForType(fieldType);
+                if (fieldConverter == null) {
+                    throw new SnowflakeException("No field converter found for type " + fieldType);
+                }
                 Object value = fieldConverter.convert(formValue, fieldType);
                 if (value != null)
                     ReflectionHelpers.invokeSetterForVariable(fieldName, value, fieldType, httpArg);
@@ -216,4 +205,9 @@ public class WebRequest {
     public Question getQuestion() {
         return question;
     }
+
+    public void setCustomArgs(Set<Object> customArgs) {
+        this.customArgs.addAll(customArgs);
+    }
+
 }
