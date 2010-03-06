@@ -11,6 +11,7 @@ import org.snowflake.Answer;
 import org.snowflake.Question;
 import org.snowflake.RequestInterceptor;
 import org.snowflake.SnowflakeException;
+import org.snowflake.ValidationException;
 import org.snowflake.WebMethod;
 import org.snowflake.WebPage;
 import org.snowflake.WebRequest;
@@ -40,9 +41,9 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
 
     public void handle(HttpExchange exchange) throws IOException {
         Console.justify(exchange.getRequestMethod() + " " + exchange.getRequestURI(), "=> " + webMethod.toString());
+        Answer answer = webMethod.createAnswer(webApp.getDefaultViewCss());
         try {
             Question question = parseRequest(exchange);
-            Answer answer = webMethod.createAnswer();
             WebRequest webRequest = webApp.createWebRequest(webPage, webMethod, question, answer);
             try {
                 for (RequestInterceptor requestInterceptor : webApp.getRequestInterceptors()) {
@@ -53,16 +54,19 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
                 processViewOnSuccess(webRequest, exchange.getResponseBody());
 
             } catch (SnowflakeException e) {
-                sendFailureResponseHeaders(exchange, webRequest.getAnswer());
+                if (!(e instanceof ValidationException)) {
+                    e.printStackTrace(Console.out);
+                }
                 processViewOnFailure(webRequest, exchange.getResponseBody(), e);
             } finally {
                 for (RequestInterceptor requestInterceptor : webApp.getRequestInterceptors()) {
                     requestInterceptor.after(question, answer);
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+        } catch (Throwable t) {
+            sendFailureResponseHeaders(exchange, answer);
+            t.printStackTrace(Console.err);
+            throw new IOException(t);
         } finally {
             exchange.close();
         }

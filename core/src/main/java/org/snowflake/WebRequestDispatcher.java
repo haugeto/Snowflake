@@ -47,13 +47,13 @@ public abstract class WebRequestDispatcher {
      *            Data about the response
      * @return The WebRequest that will handle rendering of the view
      */
-    protected void processController(WebRequest webRequest) throws SnowflakeException {
+    protected void processController(WebRequest webRequest) throws Throwable {
         webRequest.delegateToController();
         if (webMethod.reusesView()) {
             WebMethod index = webMethod.getReuseViewMethod();
             Question indexQuestion = new Question();
             indexQuestion.setUrl(webPage.getBaseUrl());
-            Answer indexAnswer = index.createAnswer();
+            Answer indexAnswer = index.createAnswer(webRequest.getAnswer().getViewCss());
             indexAnswer.putAll(webRequest.getAnswer().getTemplateVariables());
             webRequest.setWebMethod(index);
             webRequest.setAnswer(indexAnswer);
@@ -102,7 +102,7 @@ public abstract class WebRequestDispatcher {
             OutputStream responseBody) throws Exception {
         Question failedQuestion = failedRequest.getQuestion();
         WebMethod showFormMethod = webPage.findPrevious(this.webMethod);
-        Answer answer = showFormMethod.createAnswer();
+        Answer answer = showFormMethod.createAnswer(failedRequest.getAnswer().getViewCss());
         answer.setFormData(failedQuestion.getParameters());
         answer.setFormDataType(showFormMethod.getReturnType());
         answer.setValidationErrors(validationException.getErrorMessages());

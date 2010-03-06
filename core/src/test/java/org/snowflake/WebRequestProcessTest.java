@@ -41,7 +41,7 @@ public class WebRequestProcessTest {
     }
 
     @Test
-    public void testFoo() throws Exception {
+    public void testFoo() throws Throwable {
         WebMethod webMethod = webPage.getWebMethodByName("foo");
         WebRequest request = new WebRequest(devServer, webPage, webMethod, question, answer);
         request.delegateToController();
@@ -49,7 +49,7 @@ public class WebRequestProcessTest {
     }
 
     @Test
-    public void testIndex() throws Exception {
+    public void testIndex() throws Throwable {
         WebMethod webMethod = webPage.getWebMethodByName("index");
         WebRequest request = new WebRequest(devServer, webPage, webMethod, question, answer);
         request.delegateToController();
@@ -57,7 +57,7 @@ public class WebRequestProcessTest {
     }
 
     @Test
-    public void testSomeMethod() throws Exception {
+    public void testSomeMethod() throws Throwable {
         WebMethod webMethod = webPage.getWebMethodByName("someMethod");
         question.setId(42);
         WebRequest request = new WebRequest(devServer, webPage, webMethod, question, answer);
@@ -67,7 +67,7 @@ public class WebRequestProcessTest {
     }
 
     @Test
-    public void testCollectionMethod() throws Exception {
+    public void testCollectionMethod() throws Throwable {
         WebMethod webMethod = webPage.getWebMethodByName("collectionMethod");
         question.setId(42);
         WebRequest request = new WebRequest(devServer, webPage, webMethod, question, answer);
@@ -78,7 +78,7 @@ public class WebRequestProcessTest {
     }
 
     @Test
-    public void testMethodWithMap() throws Exception {
+    public void testMethodWithMap() throws Throwable {
         WebMethod webMethod = webPage.getWebMethodByName("methodWithMap");
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("1", "hello1");

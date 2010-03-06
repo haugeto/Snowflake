@@ -35,6 +35,8 @@ import org.snowflake.views.velocity.VelocityViewFactory;
  */
 public class WebApp {
 
+    public static final String SNOWFLAKE_CSS = "/static/org/snowflake/snowflake.css";
+
     protected final Map<Object, WebPage> webPages = new LinkedHashMap<Object, WebPage>();
 
     protected final Set<FormFieldTemplateGenerator> formFieldTemplateGenerators = new LinkedHashSet<FormFieldTemplateGenerator>();
@@ -46,6 +48,8 @@ public class WebApp {
     protected ViewFactory viewFactory = new VelocityViewFactory(this);
 
     protected String name;
+    
+    protected String defaultViewCss = SNOWFLAKE_CSS;
 
     public WebApp() {
         this("Snowflake");
@@ -161,6 +165,14 @@ public class WebApp {
      */
     public List<RequestInterceptor> getRequestInterceptors() {
         return new ArrayList<RequestInterceptor>(this.requestInterceptors);
+    }
+
+    public String getDefaultViewCss() {
+        return defaultViewCss;
+    }
+
+    public void setDefaultViewCss(String defaultViewCss) {
+        this.defaultViewCss = defaultViewCss;
     }
 
 }

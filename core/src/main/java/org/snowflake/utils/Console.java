@@ -25,6 +25,8 @@ public class Console {
 
     public static PrintStream out = System.out;
 
+    public static PrintStream err = System.err;
+
     static Map<String, Object> variables = new HashMap<String, Object>();
 
     static {

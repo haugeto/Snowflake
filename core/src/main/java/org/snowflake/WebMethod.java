@@ -157,9 +157,10 @@ public class WebMethod implements Comparable<WebMethod> {
                 .startsWith("get") || m.getName().startsWith("set")));
     }
 
-    public Answer createAnswer() {
+    public Answer createAnswer(String defaultViewCss) {
         Answer answer = new Answer();
         answer.setTemplateFile(getTemplateFileName());
+        answer.setViewCss(defaultViewCss);
         if (next != null) {
             answer.setNextUrl(next.getUrl());
         }

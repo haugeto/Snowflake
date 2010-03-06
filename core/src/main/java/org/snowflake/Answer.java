@@ -61,6 +61,8 @@ public class Answer {
     String nextUrl;
 
     boolean layoutDecorated = true;
+    
+    String viewCss;
 
     public Answer() {
     }
@@ -261,6 +263,14 @@ public class Answer {
                 "contentType", this.contentType).append("formDataType", this.formDataType).append("indexDataObjects",
                 this.hasIndexData() ? this.indexData.size() : 0).append("templateFile", this.templateFile).append(
                 "title", this.title).append("templateVariables", this.templateVariables).toString();
+    }
+
+    public String getViewCss() {
+        return viewCss;
+    }
+
+    public void setViewCss(String viewCss) {
+        this.viewCss = viewCss;
     }
 
 }

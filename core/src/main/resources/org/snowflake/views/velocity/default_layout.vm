@@ -4,7 +4,7 @@
 	<head>
 		<title>$view_title</title>
 		<link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css" />
-		<link rel="stylesheet" type="text/css" href="/static/org/snowflake/snowflake.css" />
+		<link rel="stylesheet" type="text/css" href="$view_css" />
 	</head>
 	<body>
 		<div id="doc" class="yui-t7">

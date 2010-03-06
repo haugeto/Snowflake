@@ -43,7 +43,7 @@ public class WebRequest {
         this.answer = answer;
     }
 
-    public void delegateToController() throws SnowflakeException {
+    public void delegateToController() throws Throwable {
         ViewHints viewHints = answer.getViewHints();
         for (WebMethod webMethod : webPage.rowActionWebMethods()) {
             viewHints.addRowAction(webPage.getController(), webMethod.getName());
@@ -58,14 +58,14 @@ public class WebRequest {
         Object result;
         try {
             result = webMethod.getMethod().invoke(webPage.getController(), args);
-        } catch (InvocationTargetException invocationTargetException) {
-            Throwable e = invocationTargetException.getTargetException();
-            if (e instanceof SnowflakeException)
-                throw (SnowflakeException) e;
-            else
-                throw new SnowflakeException(e);
         } catch (Exception e) {
-            throw new SnowflakeException(e);
+            Throwable t;
+            if (e instanceof InvocationTargetException) {
+                t = ((InvocationTargetException) e).getTargetException();
+            } else {
+                t = e;
+            }
+            throw t;
         }
         answer.setData(result);
 
