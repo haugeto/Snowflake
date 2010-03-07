@@ -19,7 +19,7 @@ import org.snowflake.utils.Console;
  */
 public class InterceptedShoppingAssistant {
 
-    public Collection<ShoppingItem> index(Question question, Answer answer, Session session) {
+    public Collection<ShoppingItem> index(Answer answer, Question question, Session session) {
         Console.println("index received: " + session);
         answer.setTitle("Welcome!");
         return session.shoppingItems.values();

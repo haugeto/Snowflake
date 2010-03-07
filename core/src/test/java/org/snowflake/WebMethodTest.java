@@ -34,11 +34,6 @@ public class WebMethodTest {
     }
 
     @Test(expected = RuntimeException.class)
-    public void testValidateInvalid1() throws Exception {
-        WebMethod.validate(InvalidTestPage.class.getMethod("invalid1", Answer.class, Question.class), null);
-    }
-
-    @Test(expected = RuntimeException.class)
     public void testValidateInvalid2() throws Exception {
         WebMethod.validate(InvalidTestPage.class.getMethod("invalid2", Question.class, Answer.class, int.class,
                 TestDataObject.class), null);
