@@ -25,8 +25,6 @@ import org.snowflake.views.velocity.VelocityViewFactory;
  * </ul>
  * Backlog:
  * <ul>
- * <li />TODO: Interceptors before and after handling a HTTP request
- * <li />TODO: Support boolean types with checkboxes
  * <li />TODO: Pluggable mechanism for determining what field is an ID (must be
  * based on type introspection and variable name)
  * </ul>
@@ -43,7 +41,7 @@ public class WebApp {
 
     protected final List<FieldConverter> fieldConverters = new ArrayList<FieldConverter>();
 
-    protected final List<RequestInterceptor> requestInterceptors = new ArrayList<RequestInterceptor>();
+    protected final List<RequestInterceptor<?>> requestInterceptors = new ArrayList<RequestInterceptor<?>>();
 
     protected ViewFactory viewFactory = new VelocityViewFactory(this);
 
@@ -156,15 +154,15 @@ public class WebApp {
      * Add a RequestInterceptor that will be given the chance to pre- and post
      * process a request to the application.
      */
-    public void addRequestInterceptor(RequestInterceptor requestInterceptor) {
+    public void addRequestInterceptor(RequestInterceptor<?> requestInterceptor) {
         this.requestInterceptors.add(requestInterceptor);
     }
 
     /**
      * Get a copy of the request interceptors currently registered.
      */
-    public List<RequestInterceptor> getRequestInterceptors() {
-        return new ArrayList<RequestInterceptor>(this.requestInterceptors);
+    public List<RequestInterceptor<?>> getRequestInterceptors() {
+        return new ArrayList<RequestInterceptor<?>>(this.requestInterceptors);
     }
 
     public String getDefaultViewCss() {

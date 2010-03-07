@@ -7,7 +7,7 @@ package org.snowflake;
  * @see WebApp#addRequestInterceptor(RequestInterceptor)
  * @author haugeto
  */
-public interface RequestInterceptor {
+public interface RequestInterceptor<T> {
     /**
      * Invoked before a request is processed
      * 
@@ -15,7 +15,7 @@ public interface RequestInterceptor {
      *         have the class of the returned type as one of their arguments.
      *         Returns null if not applicable.
      */
-    public Object before(Question question, Answer answer) throws Exception;
+    public T before(Question question, Answer answer) throws Exception;
 
     /**
      * Invoked after a request is processed
@@ -24,5 +24,5 @@ public interface RequestInterceptor {
      *            The value that was returned by
      *            {@link #before(Question, Answer)}
      */
-    public void after(Question question, Answer answer, Object beforeReturnVal) throws Exception;
+    public void after(Question question, Answer answer, T beforeReturnVal) throws Exception;
 }

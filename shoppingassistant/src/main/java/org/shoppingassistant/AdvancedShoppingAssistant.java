@@ -133,15 +133,15 @@ public class AdvancedShoppingAssistant {
         devServer.run();
     }
 
-    static class RequestInterceptorExample implements RequestInterceptor {
+    static class RequestInterceptorExample implements RequestInterceptor<Session> {
 
         @Override
-        public void after(Question question, Answer answer, Object object) throws Exception {
+        public void after(Question question, Answer answer, Session object) throws Exception {
             Console.println("After: " + question + ": " + object);
         }
 
         @Override
-        public Object before(Question question, Answer answer) throws Exception {
+        public Session before(Question question, Answer answer) throws Exception {
             return new Session("session1");
         }
 

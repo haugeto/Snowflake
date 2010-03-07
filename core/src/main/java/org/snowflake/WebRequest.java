@@ -92,9 +92,9 @@ public class WebRequest implements ArgumentProducer {
             answer.setTemplateFile(otherMethod.getTemplateFileName());
             view = otherMethod.getView();
         } else {
-            // TODO: fail with a meaningful exception if webmethod has no view
             view = webMethod.getView();
         }
+        // TODO: Will throw NullPointerExceptions for views we cannot auto generate
         view.renderView(webMethod, answer, responseBody);
     }
 

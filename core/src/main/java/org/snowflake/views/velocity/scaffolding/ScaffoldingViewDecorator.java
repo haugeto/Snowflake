@@ -37,7 +37,6 @@ public class ScaffoldingViewDecorator implements View {
 
     @Override
     public void renderView(WebMethod webMethod, Answer answer, OutputStream out) throws Exception {
-        // TODO: "auto" as file name suffix (instead of prefix)
         String autoTemplateName = answer.getTemplateFile() + ".auto";
         String autoTemplateContent = null;
         answer.setTemplateFile(autoTemplateName);

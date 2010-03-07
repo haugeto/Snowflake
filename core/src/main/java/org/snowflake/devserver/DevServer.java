@@ -16,10 +16,7 @@ import org.snowflake.views.View;
 import com.sun.net.httpserver.HttpServer;
 
 /**
- * The starting point for a Snowflake application under development.
- * <p />
- * TODO: Exception handling: How do we capture exceptions thrown in Threads
- * created by the HttpServer?
+ * The development server we use while developing a Snowflake application
  * 
  * @author haugeto
  */
@@ -52,9 +49,6 @@ public class DevServer extends WebApp {
         long startupTime = System.currentTimeMillis();
         Console.br();
         Console.center("Snowflake MVC");
-
-        // TODO: Thread.setDefaultUncaughtExceptionHandler(...);
-
         viewFactory.initialize();
         beforeStart();
 
@@ -105,8 +99,6 @@ public class DevServer extends WebApp {
     }
 
     protected void initializeStaticContentContexts() {
-        // TODO: Is it feasible to consolidate this logic with that of
-        // initializeDynamicContentContexts()?
         WebPage staticWebPage = new WebPage(new StaticContentController(), "/static");
         webPages.put("/static", staticWebPage);
         for (WebMethod staticContentMethod : staticWebPage.getWebMethods()) {
