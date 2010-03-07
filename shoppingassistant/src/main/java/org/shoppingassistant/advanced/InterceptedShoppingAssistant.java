@@ -1,10 +1,7 @@
 package org.shoppingassistant.advanced;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
-import org.shoppingassistant.ItemCategory;
 import org.shoppingassistant.ShoppingAssistant;
 import org.shoppingassistant.ShoppingItem;
 import org.snowflake.Answer;
@@ -22,29 +19,22 @@ import org.snowflake.utils.Console;
  */
 public class InterceptedShoppingAssistant {
 
-    Map<Integer, ShoppingItem> shoppingItems = new LinkedHashMap<Integer, ShoppingItem>();
-
-    public InterceptedShoppingAssistant() {
-        // Put a sample data object in our "database"
-        shoppingItems.put(1, new ShoppingItem(1, ItemCategory.MEAT, "Entrecote", 2));
-    }
-
     public Collection<ShoppingItem> index(Question question, Answer answer, Session session) {
         Console.println("index received: " + session);
         answer.setTitle("Welcome!");
-        return shoppingItems.values();
+        return session.shoppingItems.values();
     }
 
     public ShoppingItem add(Session session) {
         Console.println("add received: " + session);
         ShoppingItem shoppingItem = new ShoppingItem();
-        shoppingItem.setId(shoppingItems.size() + 1);
+        shoppingItem.setId(session.shoppingItems.size() + 1);
         return shoppingItem;
     }
 
     public ShoppingItem edit(Integer id, Session session) {
         Console.println("edit received: " + session);
-        return shoppingItems.get(id);
+        return session.shoppingItems.get(id);
     }
 
     public void save(Question question, ShoppingItem shoppingItem, Session session) {
@@ -54,22 +44,22 @@ public class InterceptedShoppingAssistant {
         }
         if (shoppingItem.getId() == null) {
             // Yes, I know. This is a horrible way of generating an id.
-            shoppingItem.setId(shoppingItems.size());
+            shoppingItem.setId(session.shoppingItems.size());
         }
-        shoppingItems.put(shoppingItem.getId(), shoppingItem);
+        session.shoppingItems.put(shoppingItem.getId(), shoppingItem);
     }
 
     public void more(Integer id, Session session) {
         Console.println("more received: " + session);
-        if (shoppingItems.containsKey(id)) {
-            ShoppingItem shoppingItem = shoppingItems.get(id);
+        if (session.shoppingItems.containsKey(id)) {
+            ShoppingItem shoppingItem = session.shoppingItems.get(id);
             shoppingItem.setQuantity(shoppingItem.getQuantity() + 1);
         }
     }
 
     public void delete(Question question, Integer id, Session session) {
         Console.println("delete received: " + session);
-        shoppingItems.remove(id);
+        session.shoppingItems.remove(id);
     }
 
     public static void main(String[] args) throws Exception {
