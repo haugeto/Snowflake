@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
 
             } catch (SnowflakeException e) {
                 if (!(e instanceof ValidationException)) {
-                    e.printStackTrace(Console.out);
+                    e.printStackTrace(Console.err);
                 }
                 processViewOnFailure(webRequest, exchange.getResponseBody(), e);
             } finally {
@@ -93,6 +94,7 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
 
     void sendSuccessfulResponseHeaders(HttpExchange exchange, Answer answer) throws IOException {
         Headers responseHeaders = exchange.getResponseHeaders();
+        responseHeaders.set("Server", DevServer.SERVER_NAME);
         responseHeaders.set("Content-Type", answer.getContentType());
         if (answer.getContentLength() != null) {
             responseHeaders.set("Content-Length", Long.toString(answer.getContentLength()));
@@ -100,6 +102,7 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
         if (answer.getLastModified() != null) {
             responseHeaders.set("Last-Modified", answer.getLastModified().toString());
         }
+        responseHeaders.set("Date", new Date().toString());
         exchange.sendResponseHeaders(WebRequest.HTTP_OK, 0);
     }
 

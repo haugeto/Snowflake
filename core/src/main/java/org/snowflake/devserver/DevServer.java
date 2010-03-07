@@ -5,12 +5,10 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
 import org.snowflake.SnowflakeException;
-import org.snowflake.StaticContentController;
 import org.snowflake.WebApp;
 import org.snowflake.WebMethod;
 import org.snowflake.WebPage;
 import org.snowflake.utils.Console;
-import org.snowflake.views.StaticContentView;
 import org.snowflake.views.View;
 
 import com.sun.net.httpserver.HttpServer;
@@ -21,6 +19,8 @@ import com.sun.net.httpserver.HttpServer;
  * @author haugeto
  */
 public class DevServer extends WebApp {
+
+    public static final String SERVER_NAME = "Snowflake DevServer 1.0";
 
     public static final int DEFAULT_PORT = 4040;
 

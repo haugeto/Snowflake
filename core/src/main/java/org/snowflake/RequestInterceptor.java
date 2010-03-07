@@ -20,9 +20,9 @@ public interface RequestInterceptor<T> {
     /**
      * Invoked after a request is processed
      * 
-     * @param object
+     * @param returnedByBefore
      *            The value that was returned by
      *            {@link #before(Question, Answer)}
      */
-    public void after(Question question, Answer answer, T beforeReturnVal) throws Exception;
+    public void after(Question question, Answer answer, T returnedByBefore) throws Exception;
 }
