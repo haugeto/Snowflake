@@ -5,9 +5,10 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.views.View;
@@ -49,10 +50,6 @@ public class WebMethod implements Comparable<WebMethod> {
 
     Method method;
 
-    boolean hasQuestionArg;
-
-    boolean hasAnswerArg;
-
     boolean hasHttpArg;
 
     boolean hasViewTemplateFile;
@@ -80,18 +77,17 @@ public class WebMethod implements Comparable<WebMethod> {
         return r;
     }
 
-    public void initializeArgs() {
+    public void initializeArgs(Set<Class<?>> argTypesToIgnore) {
         List<Class<?>> parameterTypes = new ArrayList<Class<?>>(Arrays.asList(method.getParameterTypes()));
-        if (parameterTypes.remove(Question.class)) {
-            hasQuestionArg = true;
-        }
-        if (parameterTypes.remove(Answer.class)) {
-            hasAnswerArg = true;
+        parameterTypes.remove(Question.class);
+        parameterTypes.remove(Answer.class);
+        if (argTypesToIgnore != null) {
+            parameterTypes.removeAll(argTypesToIgnore);
         }
         if (!parameterTypes.isEmpty()) {
             hasHttpArg = true;
             Class<?> httpArg = parameterTypes.get(0);
-            httpArgType = httpArg;
+            this.httpArgType = httpArg;
             if (isCustomArgument(httpArg)) {
                 this.httpMethod = HttpMethod.POST;
             }
@@ -110,39 +106,21 @@ public class WebMethod implements Comparable<WebMethod> {
     }
 
     // TODO: Consider making method validate non-static. Tradeoffs?
-    public static void validate(Method method) {
-        if (Void.class == method.getReturnType()) {
-            throw new SnowflakeException("Illegal return type Void for web method \"" + method.getName() + "\" of "
-                    + method.getDeclaringClass());
-        }
+    public static void validate(Method method, Set<Class<?>> argumentTypesToIgnore) {
+        if (argumentTypesToIgnore == null)
+            argumentTypesToIgnore = new HashSet<Class<?>>();
 
-        int answerIndex = -1;
-        int questionIndex = -1;
+        argumentTypesToIgnore.add(Question.class);
+        argumentTypesToIgnore.add(Answer.class);
+
         boolean foundSimpleType = false;
         boolean foundNonSimpleType = false;
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             Class<?> type = method.getParameterTypes()[i];
-            if (type.equals(Answer.class))
-                answerIndex = i;
-            if (type.equals(Question.class))
-                questionIndex = i;
             if (!isCustomArgument(type))
                 foundSimpleType = true;
-            if (isCustomArgument(type) && !type.equals(Question.class) && !type.equals(Answer.class))
+            if (isCustomArgument(type) && !argumentTypesToIgnore.contains(type))
                 foundNonSimpleType = true;
-        }
-
-        if ((questionIndex > 0) || (answerIndex == 1 && questionIndex != 0)) {
-            throw new SnowflakeException("Expected argument of type " + Question.class.getName()
-                    + " to appear as first argument for method \"" + method.getName() + "\" of "
-                    + method.getDeclaringClass());
-        }
-        if (answerIndex == 0) {
-            if (questionIndex != -1) {
-                throw new SnowflakeException("Expected argument of type " + Answer.class.getName()
-                        + " to appear as second argument for method \"" + method.getName() + "\" of "
-                        + method.getDeclaringClass());
-            }
         }
         if (foundSimpleType && foundNonSimpleType) {
             throw new SnowflakeException("Method \"" + method.getName() + "\" of " + method.getDeclaringClass()

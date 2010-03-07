@@ -22,14 +22,14 @@ public class WebRequestTest {
         WebPage webPage = new WebPage(new TestPage(), "/");
         WebMethod someMethod = webPage.getWebMethodByName("someMethod");
         WebRequest webRequest = new WebRequest(null, webPage, someMethod, question, answer);
-        someMethod.initializeArgs();
+        someMethod.initializeArgs(null);
         Object[] someMethodArgs = new ArgumentsBuilder(webRequest).buildArguments(webRequest.webMethod.getMethod());
         assertNotNull(someMethodArgs);
         assertEquals(1, someMethodArgs.length);
         assertEquals(42, someMethodArgs[0]);
 
         WebMethod methodWithMap = new WebMethod(TestPage.class.getMethod("methodWithMap", Answer.class, Map.class));
-        methodWithMap.initializeArgs();
+        methodWithMap.initializeArgs(null);
         WebRequest request2 = new WebRequest(null, webPage, methodWithMap, question, answer);
         Object[] methodWithMapArgs = new ArgumentsBuilder(request2).buildArguments(request2.webMethod.getMethod());
         assertNotNull(methodWithMapArgs);
@@ -45,7 +45,7 @@ public class WebRequestTest {
         question.setParameters(paramMap);
         WebMethod methodWithCustomArg = new WebMethod(TestPage.class.getMethod("methodWithTestDataObjectArg",
                 TestDataObject.class));
-        methodWithCustomArg.initializeArgs();
+        methodWithCustomArg.initializeArgs(null);
         WebApp webApp = new WebApp();
         WebRequest request3 = new WebRequest(webApp, webPage, methodWithCustomArg, question, answer);
         Object[] methodWithCustomArgArgs = new ArgumentsBuilder(request3).buildArguments(methodWithCustomArg

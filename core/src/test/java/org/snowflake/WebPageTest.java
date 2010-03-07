@@ -22,7 +22,7 @@ public class WebPageTest {
     @Test
     public void testCreateWebMethodsFindsEditAndSubmitMethods() {
         WebPage webPage = new WebPage(new CrudPage());
-        webPage.createWebMethods("/");
+        webPage.createWebMethods("/", null);
         Set<WebMethod> webMethods = webPage.webMethods;
 
         Map<WebMethodType, WebMethod> operations = new HashMap<WebMethodType, WebMethod>();
@@ -47,7 +47,7 @@ public class WebPageTest {
     @Test
     public void testCreateWebMethodsHandlesCustomMethods() {
         WebPage webPage = new WebPage(new CrudPage());
-        webPage.createWebMethods("/");
+        webPage.createWebMethods("/", null);
         Set<WebMethod> webMethods = webPage.webMethods;
         WebMethod customOp = null;
         for (WebMethod webMethod : webMethods) {
@@ -81,7 +81,7 @@ public class WebPageTest {
     @Test
     public void testGetActionMethods() {
         WebPage webPage = new WebPage(new TestPage());
-        webPage.createWebMethods("/");
+        webPage.createWebMethods("/", null);
 
         List<WebMethod> webMethods = webPage.rowActionWebMethods();
         assertNotNull(webMethods);
@@ -92,6 +92,23 @@ public class WebPageTest {
         assertTrue(methodNames.contains("methodWithId"));
         assertTrue(methodNames.contains("collectionMethod"));
         assertTrue(methodNames.contains("someMethod"));
+    }
+
+    @Test
+    public void testCreateWebMethodsHandlesIgnoredArgs() {
+        TestPage controller = new TestPage() {
+            @SuppressWarnings("unused")
+            public void methodWithIgnoreArg(Answer a, Question q, int i, WebPageTest webPageTest) {
+            }
+        };
+        Set<Class<?>> ignoreArgs = new HashSet<Class<?>>();
+        ignoreArgs.add(WebPageTest.class);
+        WebPage webPage = new WebPage(controller, "/", ignoreArgs);
+
+        WebMethod methodWithIgnoreArg = webPage.getWebMethodByName("methodWithIgnoreArg");
+        assertNotNull(methodWithIgnoreArg);
+        assertSame(WebMethod.HttpMethod.GET, methodWithIgnoreArg.getHttpMethod());
+        assertTrue(methodWithIgnoreArg.hasHttpArg);
     }
 
 }

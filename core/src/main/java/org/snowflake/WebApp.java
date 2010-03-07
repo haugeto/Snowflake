@@ -2,6 +2,7 @@ package org.snowflake;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -46,7 +47,7 @@ public class WebApp {
     protected ViewFactory viewFactory = new VelocityViewFactory(this);
 
     protected String name;
-    
+
     protected String defaultViewCss = SNOWFLAKE_CSS;
 
     public WebApp() {
@@ -80,7 +81,14 @@ public class WebApp {
             throw new IllegalArgumentException("URL prefix \"/static\" is reserved for static content");
         }
 
-        WebPage webPage = new WebPage(controller, url);
+        Set<Class<?>> argumentTypesToIgnore = new HashSet<Class<?>>();
+        for (RequestInterceptor<?> requestInterceptor : this.requestInterceptors) {
+            Class<?> type = requestInterceptor.getType();
+            if (type != null)
+                argumentTypesToIgnore.add(type);
+        }
+
+        WebPage webPage = new WebPage(controller, url, argumentTypesToIgnore);
         this.webPages.put(controller, webPage);
     }
 
@@ -155,6 +163,9 @@ public class WebApp {
      * process a request to the application.
      */
     public void addRequestInterceptor(RequestInterceptor<?> requestInterceptor) {
+        if (!this.webPages.isEmpty()) {
+            throw new IllegalStateException("addRequestInterceptor must be invoked before registerController");
+        }
         this.requestInterceptors.add(requestInterceptor);
     }
 

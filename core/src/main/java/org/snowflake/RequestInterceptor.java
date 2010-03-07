@@ -25,4 +25,10 @@ public interface RequestInterceptor<T> {
      *            {@link #before(Question, Answer)}
      */
     public void after(Question question, Answer answer, T returnedByBefore) throws Exception;
+
+    /**
+     * Tells the framework which type this interceptor will pass to controller
+     * methods. Returns null if not applicable.
+     */
+    public Class<T> getType();
 }

@@ -2,6 +2,7 @@ package org.snowflake.devserver;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.HashSet;
 import java.util.concurrent.Executors;
 
 import org.snowflake.SnowflakeException;
@@ -99,7 +100,7 @@ public class DevServer extends WebApp {
     }
 
     protected void initializeStaticContentContexts() {
-        WebPage staticWebPage = new WebPage(new StaticContentController(), "/static");
+        WebPage staticWebPage = new WebPage(new StaticContentController(), "/static", new HashSet<Class<?>>());
         webPages.put("/static", staticWebPage);
         for (WebMethod staticContentMethod : staticWebPage.getWebMethods()) {
             staticContentMethod.setView(new StaticContentView());

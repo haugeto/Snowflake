@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,18 +36,22 @@ public class WebPage {
     }
 
     public WebPage(Object controller, String baseUrl) {
-        this.controller = controller;
-        this.baseUrl = baseUrl;
-        createWebMethods(baseUrl);
+        this(controller, baseUrl, new HashSet<Class<?>>());
     }
 
-    void createWebMethods(String baseUrl) {
+    public WebPage(Object controller, String baseUrl, Set<Class<?>> argumentTypesToIgnore) {
+        this.controller = controller;
+        this.baseUrl = baseUrl;
+        createWebMethods(baseUrl, argumentTypesToIgnore);
+    }
+
+    void createWebMethods(String baseUrl, Set<Class<?>> argumentTypesToIgnore) {
         List<WebMethod> webMethods = new ArrayList<WebMethod>();
         for (Method method : getController().getClass().getMethods()) {
             if (WebMethod.isWebMethod(method)) {
-                WebMethod.validate(method);
+                WebMethod.validate(method, argumentTypesToIgnore);
                 WebMethod webMethod = new WebMethod(method);
-                webMethod.initializeArgs();
+                webMethod.initializeArgs(argumentTypesToIgnore);
                 webMethod.initializeOperation();
                 webMethod.initializeUrl(baseUrl);
                 webMethods.add(webMethod);
