@@ -14,6 +14,8 @@ import java.io.StringReader;
  */
 public class ConsoleListener implements Runnable {
 
+    public static final String NO_SCAFFOLD_ERROR_MESSAGE = "No scaffold generated: Load a URL from above in a browser and run the command again";
+
     enum InputToken {
         DUMP("Show previously generated scaffold"), SAVE("Save previously generated scaffold to file"), HELP(
                 "Show help screen"), EXIT("Exit snowflake");
@@ -52,10 +54,12 @@ public class ConsoleListener implements Runnable {
             String name;
             if (previouslyGeneratedScaffoldContent != null && previouslyGeneratedScaffoldName != null) {
                 name = previouslyGeneratedScaffoldName.toString();
-                Console.println("--- " + name + " ---");
+                Console.println("Dumping scaffold \"" + name + "\":");
+                Console.hr();
                 Console.println(previouslyGeneratedScaffoldContent.toString());
+                Console.hr();
             } else {
-                Console.println("No scaffold has been generated");
+                Console.println(NO_SCAFFOLD_ERROR_MESSAGE);
             }
             break;
         case SAVE:
@@ -64,9 +68,9 @@ public class ConsoleListener implements Runnable {
             if (previouslyGeneratedScaffoldContent != null && previouslyGeneratedScaffoldName != null) {
                 name = previouslyGeneratedScaffoldName.toString();
                 String content = previouslyGeneratedScaffoldContent.toString();
-                
+
                 File f = new File(this.scaffoldSaveDir, name);
-                
+
                 Console.println("Saving " + content.length() + " bytes to \"" + f.getAbsolutePath() + "\"");
                 try {
                     FileWriter writer = new FileWriter(f);
@@ -74,14 +78,13 @@ public class ConsoleListener implements Runnable {
                     writer.flush();
                     writer.close();
                 } catch (IOException e) {
-                   Console.println("Couldn't save file: " + e.getMessage()); 
+                    Console.println("Couldn't save file: " + e.getMessage());
                 }
-                
+
             } else {
-                Console.println("No scaffold has been generated");
+                Console.println(NO_SCAFFOLD_ERROR_MESSAGE);
             }
-            
-            
+
             break;
 
         case EXIT:

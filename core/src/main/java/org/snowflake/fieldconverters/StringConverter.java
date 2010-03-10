@@ -7,10 +7,6 @@ public class StringConverter implements FieldConverter {
     }
 
     public Object convert(String input, Class<?> type) {
-        if (input != null) {
-            if (input.isEmpty())
-                return null;
-        }
         return input;
     }
 

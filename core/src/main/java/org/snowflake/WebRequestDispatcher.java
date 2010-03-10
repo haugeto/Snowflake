@@ -89,7 +89,7 @@ public abstract class WebRequestDispatcher {
             SnowflakeException exception) throws Exception {
         if (exception instanceof ValidationException) {
             ValidationException validationException = (ValidationException) exception;
-            Map<String, String> errorMessages = validationException.getErrorMessages();
+            Map<String, String> errorMessages = validationException.getValidationMessages();
             for (String fieldName : errorMessages.keySet()) {
                 Console.justify(Console.INDENT + "Validation error [" + errorMessages.get(fieldName) + "]",
                         "For field \"" + fieldName + "\"", '.');
@@ -105,7 +105,7 @@ public abstract class WebRequestDispatcher {
         Answer answer = showFormMethod.createAnswer(failedRequest.getAnswer().getViewCss());
         answer.setFormData(failedQuestion.getParameters());
         answer.setFormDataType(showFormMethod.getReturnType());
-        answer.setValidationErrors(validationException.getErrorMessages());
+        answer.setValidationErrors(validationException.getValidationMessages());
         Question question = new Question();
         question.setId(failedQuestion.getId());
         WebRequest showFormRequest = webApp.createWebRequest(webPage, showFormMethod, question, answer);

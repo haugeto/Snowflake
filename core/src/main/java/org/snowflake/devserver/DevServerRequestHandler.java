@@ -60,6 +60,7 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
                 if (!(e instanceof ValidationException)) {
                     e.printStackTrace(Console.err);
                 }
+                sendSuccessfulResponseHeaders(exchange, webRequest.getAnswer());
                 processViewOnFailure(webRequest, exchange.getResponseBody(), e);
             } finally {
                 invokeAfterInterceptors(question, answer, customArgs);

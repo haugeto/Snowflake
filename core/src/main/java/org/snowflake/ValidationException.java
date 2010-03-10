@@ -8,7 +8,7 @@ import java.util.Map;
 @SuppressWarnings("serial")
 public class ValidationException extends SnowflakeException {
 
-    final Map<String, String> errorMessages = new LinkedHashMap<String, String>();
+    final Map<String, String> validationMessages = new LinkedHashMap<String, String>();
 
     public ValidationException(String message) {
         super(message);
@@ -20,29 +20,29 @@ public class ValidationException extends SnowflakeException {
 
     public ValidationException(String fieldName, String message) {
         this();
-        putErrorMessage(fieldName, message);
+        invalidateField(fieldName, message);
     }
 
-    public void putErrorMessage(String fieldName, String message) {
-        errorMessages.put(fieldName, message);
+    public void invalidateField(String fieldName, String message) {
+        validationMessages.put(fieldName, message);
     }
 
-    public boolean hasValidationErrors() {
-        return !errorMessages.isEmpty();
+    public boolean isInvalidated() {
+        return !validationMessages.isEmpty();
     }
 
-    public Map<String, String> getErrorMessages() {
-        return new LinkedHashMap<String, String>(this.errorMessages);
+    public Map<String, String> getValidationMessages() {
+        return new LinkedHashMap<String, String>(this.validationMessages);
     }
 
     @Override
     public String toString() {
         StringWriter result = new StringWriter();
         PrintWriter writer = new PrintWriter(result);
-        if (hasValidationErrors()) {
+        if (isInvalidated()) {
             writer.println("Validation Errors:");
-            for (String fieldName : errorMessages.keySet())
-                writer.println("\t" + fieldName + ": " + errorMessages.get(fieldName));
+            for (String fieldName : validationMessages.keySet())
+                writer.println("\t" + fieldName + ": " + validationMessages.get(fieldName));
 
         } else {
             writer.print("No validation errors");

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.snowflake.Answer;
 import org.snowflake.Question;
 import org.snowflake.ValidationException;
@@ -62,9 +63,7 @@ public class ShoppingAssistant {
      * returned object.
      */
     public ShoppingItem add() {
-        ShoppingItem shoppingItem = new ShoppingItem();
-        shoppingItem.setId(shoppingItems.size() + 1);
-        return shoppingItem;
+        return new ShoppingItem();
     }
 
     /**
@@ -93,9 +92,14 @@ public class ShoppingAssistant {
     public void save(Question question, ShoppingItem shoppingItem) {
         Console.println(question.toString());
 
-        if (shoppingItem.getQuantity() == 0) {
-            throw new ValidationException("quantity", "Zero not allowed");
-        }
+        ValidationException validationException = new ValidationException();
+        if (shoppingItem.getQuantity() == 0)
+            validationException.invalidateField("quantity", "Zero not allowed");
+        if (StringUtils.isEmpty(shoppingItem.getDescription()))
+            validationException.invalidateField("description", "Cannot be empty");
+        if (validationException.isInvalidated())
+            throw validationException;
+
         if (shoppingItem.getId() == null) {
             // Yes, I know. This is a horrible way of generating an id.
             shoppingItem.setId(shoppingItems.size());

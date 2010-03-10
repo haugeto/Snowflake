@@ -94,7 +94,8 @@ public class WebRequest implements ArgumentProducer {
         } else {
             view = webMethod.getView();
         }
-        // TODO: Will throw NullPointerExceptions for views we cannot auto generate
+        // TODO: Will throw NullPointerExceptions for views we cannot auto
+        // generate
         view.renderView(webMethod, answer, responseBody);
     }
 
@@ -140,25 +141,28 @@ public class WebRequest implements ArgumentProducer {
         ValidationException validationException = new ValidationException();
         for (String fieldName : publicFields.keySet()) {
             String formValue = parameters.remove(fieldName);
-            try {
+            // Missing required fields to be handled by client business
+            // logic
+            if (formValue != null && !formValue.isEmpty()) {
                 Class<?> fieldType = publicFields.get(fieldName);
                 FieldConverter fieldConverter = webApp.findConverterForType(fieldType);
                 if (fieldConverter == null) {
                     throw new SnowflakeException("No field converter found for type " + fieldType);
                 }
-                Object value = fieldConverter.convert(formValue, fieldType);
-                if (value != null)
-                    ReflectionHelpers.invokeSetterForVariable(fieldName, value, fieldType, httpArg);
-
-            } catch (FieldValidationException e) {
-                validationException.putErrorMessage(fieldName, e.getMessage());
+                try {
+                    Object value = fieldConverter.convert(formValue, fieldType);
+                    if (value != null)
+                        ReflectionHelpers.invokeSetterForVariable(fieldName, value, fieldType, httpArg);
+                } catch (FieldValidationException e) {
+                    validationException.invalidateField(fieldName, e.getMessage());
+                }
             }
         }
         if (!parameters.isEmpty())
             for (String param : parameters.keySet())
-                validationException.putErrorMessage(param, "Unmatched input \"" + parameters.get(param) + "\"");
+                validationException.invalidateField(param, "Unmatched input \"" + parameters.get(param) + "\"");
 
-        if (validationException.hasValidationErrors())
+        if (validationException.isInvalidated())
             throw validationException;
     }
 
