@@ -64,14 +64,14 @@ public class VelocityView implements View {
         for (String name : templateVariables.keySet()) {
             result.put(name, templateVariables.get(name));
         }
-        if (answer.getValidationErrors() != null) {
-            result.put("validationErrors", answer.getValidationErrors());
+        if (answer.getValidationMessages() != null) {
+            result.put("validationErrors", answer.getValidationMessages());
         }
         if (answer.getNextUrl() != null) {
             result.put("postBackUrl", answer.getNextUrl());
         }
         if (answer.hasFormData()) {
-            Map<String, String> fieldValues = new LinkedHashMap<String, String>(answer.getFormData());
+            Map<String, Object> fieldValues = new LinkedHashMap<String, Object>(answer.getFormData());
             CollectionHelpers.capitalizeKeys(fieldValues);
             result.put(answer.getFormDataName(), fieldValues);
         }

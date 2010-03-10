@@ -47,7 +47,12 @@ public class FormScaffold implements Scaffold {
         Map<String, Class<?>> publicFields = ReflectionHelpers.publicFields(dataObjectType);
         for (String fieldName : publicFields.keySet()) {
             Class<?> fieldType = publicFields.get(fieldName);
-            FormFieldTemplateGenerator generator = resolveGenerator(fieldType);
+            FormFieldTemplateGenerator generator;
+            if (answer.hasInputOptionsForField(fieldName)) {
+                generator = new SelectInputGenerator();
+            } else {
+                generator = resolveGenerator(fieldType);
+            }
             if (generator == null) {
                 throw new SnowflakeException("Cannot generate HTML input field for " + fieldName
                         + " (a public field in " + dataObjectType + ")");

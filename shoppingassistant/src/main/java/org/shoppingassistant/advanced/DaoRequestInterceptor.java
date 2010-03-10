@@ -16,6 +16,8 @@ public class DaoRequestInterceptor implements RequestInterceptor<DataAccessObjec
 
     @Override
     public DataAccessObject before(Question question, Answer answer) throws Exception {
+        // If you for instance were using Hibernate, you would retrieve a
+        // Session from the SessionFactory here
         DataAccessObject dataAccessObject = new DataAccessObject((int) (Math.random() * 1000));
         dataAccessObject.open();
         return dataAccessObject;

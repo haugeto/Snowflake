@@ -98,13 +98,13 @@ public class ReflectionHelpers {
                 + "\"");
     }
 
-    public static LinkedHashMap<String, String> fieldValues(Object dataObject) throws SnowflakeException {
+    public static LinkedHashMap<String, Object> fieldValues(Object dataObject) throws SnowflakeException {
         return fieldValues(dataObject, false);
     }
 
-    public static LinkedHashMap<String, String> fieldValues(Object dataObject, boolean capitalizeKeys)
+    public static LinkedHashMap<String, Object> fieldValues(Object dataObject, boolean capitalizeKeys)
             throws SnowflakeException {
-        LinkedHashMap<String, String> result = new LinkedHashMap<String, String>();
+        LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>();
         for (String fieldName : publicFields(dataObject.getClass()).keySet()) {
             Object returnValue;
             try {
@@ -113,11 +113,11 @@ public class ReflectionHelpers {
             } catch (Exception e) {
                 throw new SnowflakeException(e);
             }
-            String value = (returnValue == null) ? "" : returnValue.toString();
+//            String value = (returnValue == null) ? "" : returnValue.toString();
             String key = fieldName;
             if (capitalizeKeys)
                 key = StringUtils.capitalize(key);
-            result.put(key, value);
+            result.put(key, returnValue);
         }
         return result;
     }

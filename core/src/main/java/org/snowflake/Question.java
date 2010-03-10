@@ -44,6 +44,10 @@ public class Question {
         return new LinkedHashMap<String, String>(parameters);
     }
 
+    public Map<String, Object> getParametersAsObjects() {
+        return new LinkedHashMap<String, Object>(parameters);
+    }
+
     public int nrOfParameters() {
         return parameters.size();
     }

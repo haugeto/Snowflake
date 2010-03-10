@@ -31,9 +31,9 @@ public class Answer {
     final ViewHints viewHints = new ViewHints();
 
     /** Field values will be displayed in HTML form */
-    Map<String, String> formData;
+    Map<String, Object> formData;
 
-    Map<String, String> validationErrors;
+    Map<String, String> validationMessages;
 
     Class<?> formDataType;
 
@@ -61,7 +61,7 @@ public class Answer {
     String nextUrl;
 
     boolean layoutDecorated = true;
-    
+
     String viewCss;
 
     public Answer() {
@@ -86,6 +86,19 @@ public class Answer {
     protected void setInputOptions(Collection<InputOptions> inputOptionsCollection) {
         this.inputOptions.clear();
         this.inputOptions.addAll(inputOptionsCollection);
+    }
+
+    public Set<InputOptions> getInputOptions() {
+        return new HashSet<InputOptions>(this.inputOptions);
+    }
+
+    public boolean hasInputOptionsForField(String fieldName) {
+        for (InputOptions inputOptions : this.inputOptions) {
+            if (fieldName.equals(inputOptions.getFieldName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setData(Object value) {
@@ -126,11 +139,11 @@ public class Answer {
         }
     }
 
-    public Map<String, String> getFormData() {
+    public Map<String, Object> getFormData() {
         return formData;
     }
 
-    public void put(String name, Object value) {
+    public void putTemplateVariable(String name, Object value) {
         templateVariables.put(name, value);
     }
 
@@ -220,10 +233,6 @@ public class Answer {
         this.nextUrl = postbackUrl;
     }
 
-    public Set<InputOptions> getInputOptions() {
-        return new HashSet<InputOptions>(this.inputOptions);
-    }
-
     public String getIndexDataName() {
         return indexDataName;
     }
@@ -238,16 +247,16 @@ public class Answer {
         this.formDataName = StringUtils.uncapitalize(type.getSimpleName());
     }
 
-    protected void setFormData(Map<String, String> formData) {
+    protected void setFormData(Map<String, Object> formData) {
         this.formData = formData;
     }
 
-    public Map<String, String> getValidationErrors() {
-        return validationErrors;
+    public Map<String, String> getValidationMessages() {
+        return validationMessages;
     }
 
-    public void setValidationErrors(Map<String, String> validationErrors) {
-        this.validationErrors = validationErrors;
+    public void setValidationMessages(Map<String, String> validationMessages) {
+        this.validationMessages = validationMessages;
     }
 
     public String getTitle() {

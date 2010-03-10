@@ -33,7 +33,7 @@ public class InterceptedShoppingAssistant {
         return new ShoppingItem();
     }
 
-    public ShoppingItem edit(Integer id, DataAccessObject dataAccessObject) {
+    public ShoppingItem edit(Answer answer, Integer id, DataAccessObject dataAccessObject) {
         Console.println("edit received: " + dataAccessObject);
         return dataAccessObject.retrieveShoppingItemById(id);
     }

@@ -103,9 +103,9 @@ public abstract class WebRequestDispatcher {
         Question failedQuestion = failedRequest.getQuestion();
         WebMethod showFormMethod = webPage.findPrevious(this.webMethod);
         Answer answer = showFormMethod.createAnswer(failedRequest.getAnswer().getViewCss());
-        answer.setFormData(failedQuestion.getParameters());
+        answer.setFormData(failedQuestion.getParametersAsObjects());
         answer.setFormDataType(showFormMethod.getReturnType());
-        answer.setValidationErrors(validationException.getValidationMessages());
+        answer.setValidationMessages(validationException.getValidationMessages());
         Question question = new Question();
         question.setId(failedQuestion.getId());
         WebRequest showFormRequest = webApp.createWebRequest(webPage, showFormMethod, question, answer);
