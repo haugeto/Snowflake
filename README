@@ -1,8 +1,5 @@
 Snowflake Minimalistic Java MVC
 -------------------------------
-For more elaborate information about using Snowflake, please consult the wiki:
-http://wiki.github.com/haugeto/Snowflake/
-
 Some of us are stuck with Java, for good or bad reasons. Writing web applications with the Java EE standards can be tedious and requires a lot of paradigm shifting. From Java code to XML to JSP and back to Java. Et cetera.
 
 Snowflake is an attempt to cut away all the nice features of rich MVC frameworks. Instead we want to make it as easy as possible to get you in to, and keep you in high productivity flow. At the end of the day, we would like you to tell us that we made a small contribution to your successful implementation of business rescuing software. The lean way.
@@ -16,3 +13,7 @@ We're inspired by Ruby on Rails and Python Django. We've tried to avoid being in
 To get started using Snowflake, take a look at the example application called "shoppingassistant". Also, try to write "help" in the console once you started up the application.
 
 You will need Maven to build Snowflake and download dependencies. Snowflake uses Java 6.
+
+For more elaborate information about using Snowflake, please consult the wiki:
+http://wiki.github.com/haugeto/Snowflake/
+
