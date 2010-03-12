@@ -28,7 +28,7 @@ public class Answer {
 
     final Set<InputOptions> inputOptions = new HashSet<InputOptions>();
 
-    final ViewHints viewHints = new ViewHints();
+    final ScaffoldHints scaffoldHints = new ScaffoldHints();
 
     /** Field values will be displayed in HTML form */
     Map<String, Object> formData;
@@ -205,8 +205,8 @@ public class Answer {
         return this.indexData;
     }
 
-    public ViewHints getViewHints() {
-        return viewHints;
+    public ScaffoldHints getViewHints() {
+        return scaffoldHints;
     }
 
     public boolean isLayoutDecorated() {
@@ -218,11 +218,11 @@ public class Answer {
     }
 
     public void addRowAction(Object controller, String methodName) {
-        viewHints.addRowAction(controller, methodName);
+        scaffoldHints.addRowAction(controller, methodName);
     }
 
     public void columns(String... columnNames) {
-        viewHints.columns(columnNames);
+        scaffoldHints.columns(columnNames);
     }
 
     public String getNextUrl() {

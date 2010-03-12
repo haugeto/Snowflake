@@ -47,13 +47,13 @@ public class WebRequest implements ArgumentProducer {
     }
 
     public void delegateToController() throws Throwable {
-        ViewHints viewHints = answer.getViewHints();
+        ScaffoldHints scaffoldHints = answer.getViewHints();
         for (WebMethod webMethod : webPage.rowActionWebMethods()) {
-            viewHints.addRowAction(webPage.getController(), webMethod.getName());
+            scaffoldHints.addRowAction(webPage.getController(), webMethod.getName());
         }
         for (WebMethod webMethod : webPage.pageActionWebMethods()) {
             if (WebMethodType.INDEX != webMethod.getType())
-                viewHints.addPageAction(webPage.getController(), webMethod.getName());
+                scaffoldHints.addPageAction(webPage.getController(), webMethod.getName());
         }
         answer.setTitle(createTitle());
 
@@ -73,16 +73,16 @@ public class WebRequest implements ArgumentProducer {
         answer.setData(result);
 
         if (answer.hasIndexData()) {
-            if (viewHints.getColumnNames().isEmpty()) {
+            if (scaffoldHints.getColumnNames().isEmpty()) {
                 Collection<?> c = answer.getIndexData();
                 if (!c.isEmpty()) {
                     Object firstObject = c.iterator().next();
-                    viewHints.setColumnNames(ReflectionHelpers.publicFieldNames(firstObject));
+                    scaffoldHints.columns(ReflectionHelpers.publicFieldNames(firstObject));
                 }
             }
-            initUrls(viewHints.getRowActions());
+            initUrls(scaffoldHints.getRowActions());
         }
-        initUrls(viewHints.getPageActions());
+        initUrls(scaffoldHints.getPageActions());
     }
 
     public void delegateToView(OutputStream responseBody) throws Exception {

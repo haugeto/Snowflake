@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.Answer;
-import org.snowflake.ViewHints;
+import org.snowflake.ScaffoldHints;
 import org.snowflake.WebAction;
 import org.snowflake.views.scaffolding.Scaffold;
 import org.snowflake.views.scaffolding.ScaffoldingHelper;
@@ -21,9 +21,9 @@ public class IndexScaffold implements Scaffold {
         String singularName = "entry";
         final List<String> headers = new ArrayList<String>();
 
-        ViewHints viewHints = answer.getViewHints();
+        ScaffoldHints scaffoldHints = answer.getViewHints();
         if (answer.hasIndexData()) {
-            headers.addAll(viewHints.getColumnNames());
+            headers.addAll(scaffoldHints.getColumnNames());
             pluralName = answer.getIndexDataName();
         }
         title = ScaffoldingHelper.createPluralTitle(answer.getIndexData());
@@ -40,7 +40,7 @@ public class IndexScaffold implements Scaffold {
             for (String columnTitle : headers) {
                 writer.println("<th>" + columnTitle + "</th>");
             }
-            if (!viewHints.getRowActions().isEmpty()) {
+            if (!scaffoldHints.getRowActions().isEmpty()) {
                 writer.println("<th>Actions</th></tr>\n</thead>\n<tbody>");
             }
 
@@ -49,9 +49,9 @@ public class IndexScaffold implements Scaffold {
             for (String key : headers) {
                 writer.println("\t\t<td>$!" + singularName + "." + StringUtils.capitalize(key) + "</td>");
             }
-            if (!viewHints.getRowActions().isEmpty()) {
+            if (!scaffoldHints.getRowActions().isEmpty()) {
                 writer.print("\t\t<td>");
-                for (WebAction action : viewHints.getRowActions()) {
+                for (WebAction action : scaffoldHints.getRowActions()) {
                     // TODO: Infer the ID field more dynamically
                     writer.print("<a href=\"" + action.getUrl() + "/$!" + singularName + ".Id\">"
                             + action.getDescription() + "</a> ");
@@ -63,7 +63,7 @@ public class IndexScaffold implements Scaffold {
 
             writer.print("</tbody>\n</table>");
         }
-        for (WebAction pageAction : viewHints.getPageActions()) {
+        for (WebAction pageAction : scaffoldHints.getPageActions()) {
             writer.println("<p><a href=\"" + pageAction.getUrl() + "\">" + pageAction.getDescription() + "</a></p>");
         }
         writer.print("</div></div>");
