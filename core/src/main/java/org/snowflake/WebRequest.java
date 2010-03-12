@@ -47,7 +47,7 @@ public class WebRequest implements ArgumentProducer {
     }
 
     public void delegateToController() throws Throwable {
-        ScaffoldHints scaffoldHints = answer.getViewHints();
+        ScaffoldHints scaffoldHints = answer.getScaffoldHints();
         for (WebMethod webMethod : webPage.rowActionWebMethods()) {
             scaffoldHints.addRowAction(webPage.getController(), webMethod.getName());
         }

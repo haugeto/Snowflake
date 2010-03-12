@@ -6,10 +6,11 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * <p>
  * Has information about how auto views should be generated. Is initialized by
  * the framework and can be manipulated by client code.
- * </p>
+ * <p>
+ * It does not make sense to invoke methods of this class in controller methods
+ * delegating to custom views.
  * 
  * @author haugeto
  */
@@ -22,20 +23,25 @@ public class ScaffoldHints {
     final List<WebAction> pageActions = new ArrayList<WebAction>();
 
     public ScaffoldHints() {
-
     }
 
+    /**
+     * Instruct which columns should be displayed in an index table
+     */
     public void columns(String... columnNames) {
         columns(Arrays.asList(columnNames));
     }
-    
+
+    /**
+     * Instruct which columns should be displayed in an index table
+     */
     public void columns(Collection<String> columnNames) {
         this.columnNames.clear();
         this.columnNames.addAll(columnNames);
     }
 
     public List<String> getColumnNames() {
-        return columnNames;
+        return new ArrayList<String>(columnNames);
     }
 
     public void addRowAction(WebAction webAction) {
@@ -55,11 +61,11 @@ public class ScaffoldHints {
     }
 
     public List<WebAction> getRowActions() {
-        return rowActions;
+        return new ArrayList<WebAction>(rowActions);
     }
 
     public List<WebAction> getPageActions() {
-        return pageActions;
+        return new ArrayList<WebAction>(pageActions);
     }
 
 }

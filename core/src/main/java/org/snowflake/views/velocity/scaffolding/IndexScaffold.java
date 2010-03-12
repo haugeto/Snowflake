@@ -21,7 +21,7 @@ public class IndexScaffold implements Scaffold {
         String singularName = "entry";
         final List<String> headers = new ArrayList<String>();
 
-        ScaffoldHints scaffoldHints = answer.getViewHints();
+        ScaffoldHints scaffoldHints = answer.getScaffoldHints();
         if (answer.hasIndexData()) {
             headers.addAll(scaffoldHints.getColumnNames());
             pluralName = answer.getIndexDataName();

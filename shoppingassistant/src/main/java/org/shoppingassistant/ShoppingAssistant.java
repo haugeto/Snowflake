@@ -54,6 +54,7 @@ public class ShoppingAssistant {
      */
     public Collection<ShoppingItem> index(Question question, Answer answer) {
         answer.setTitle("Welcome!");
+        answer.getScaffoldHints().columns("category", "description", "quantity", "niceToHave");
         return shoppingItems.values();
     }
 
