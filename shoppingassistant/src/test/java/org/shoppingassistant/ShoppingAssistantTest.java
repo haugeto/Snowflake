@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.snowflake.Answer;
 import org.snowflake.Question;
+import org.snowflake.ValidationException;
 
 /**
  * Unit tests for {@link ShoppingAssistant}
@@ -56,6 +57,20 @@ public class ShoppingAssistantTest {
         shoppingAssistant.save(new Question(), fromForm);
         assertNotSame(shoppingItem, shoppingAssistant.shoppingItems.get(1));
         assertEquals("new description", shoppingAssistant.shoppingItems.get(1).getDescription());
+    }
+
+    @Test(expected = ValidationException.class)
+    public void saveInvalidatesZeroQuantity() {
+        ShoppingItem fromForm = new ShoppingItem();
+        fromForm.setQuantity(0);
+        shoppingAssistant.save(new Question(), fromForm);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void saveInvalidatesEmptyDescription() {
+        ShoppingItem fromForm = new ShoppingItem();
+        fromForm.setDescription("");
+        shoppingAssistant.save(new Question(), fromForm);
     }
 
     @Test
