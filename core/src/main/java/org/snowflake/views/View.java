@@ -3,6 +3,7 @@ package org.snowflake.views;
 import java.io.OutputStream;
 
 import org.snowflake.Answer;
+import org.snowflake.Question;
 import org.snowflake.WebMethod;
 
 
@@ -14,6 +15,6 @@ import org.snowflake.WebMethod;
  */
 public interface View {
 
-    public void renderView(WebMethod webMethod, Answer answer, OutputStream out) throws Exception;
+    public void renderView(WebMethod webMethod, Question question, Answer answer, OutputStream out) throws Exception;
 
 }

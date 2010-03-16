@@ -112,4 +112,10 @@ public abstract class WebRequestDispatcher {
         showFormRequest.delegateToView(responseBody);
     }
 
+    protected WebMethod chooseOverloadedMethod(Question question) {
+        // TODO: Implement resolution of which overloaded method to choose. We
+        // need something like argument annotations to do this
+        return this.webMethod;
+    }
+
 }

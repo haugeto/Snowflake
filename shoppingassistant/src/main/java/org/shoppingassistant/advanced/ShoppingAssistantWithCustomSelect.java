@@ -1,6 +1,5 @@
 package org.shoppingassistant.advanced;
 
-import org.shoppingassistant.ShoppingItem;
 import org.snowflake.Answer;
 import org.snowflake.InputOptions;
 import org.snowflake.devserver.DevServer;
@@ -12,9 +11,9 @@ import org.snowflake.utils.Console;
  * 
  * @author haugeto
  */
-public class ShoppingAssistantWithCustomSelect extends InterceptedShoppingAssistant {
+public class ShoppingAssistantWithCustomSelect extends ShoppingListItemController {
 
-    public ShoppingItem edit(Answer answer, Integer id, DataAccessObject dataAccessObject) {
+    public ShoppingListItem edit(Answer answer, Integer id, DataAccessObject dataAccessObject) {
         Console.println("edit received: " + dataAccessObject);
         InputOptions descrOptions = new InputOptions("description");
         descrOptions.put("entrecote", "entrecote");

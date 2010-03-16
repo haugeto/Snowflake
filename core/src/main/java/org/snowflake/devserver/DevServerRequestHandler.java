@@ -47,6 +47,7 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
         Answer answer = webMethod.createAnswer(webApp.getDefaultViewCss());
         try {
             Question question = parseRequest(exchange);
+            WebMethod webMethod = chooseOverloadedMethod(question);
             WebRequest webRequest = webApp.createWebRequest(webPage, webMethod, question, answer);
             Map<RequestInterceptor<?>, Object> customArgs = new HashMap<RequestInterceptor<?>, Object>();
             try {
@@ -66,8 +67,8 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
                 invokeAfterInterceptors(question, answer, customArgs);
             }
         } catch (Throwable t) {
-            sendFailureResponseHeaders(exchange, answer);
             t.printStackTrace(Console.err);
+//            sendFailureResponseHeaders(exchange, answer);
             throw new IOException(t);
         } finally {
             exchange.close();
@@ -136,6 +137,7 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
         if (!StringUtils.isEmpty(urlParameters)) {
             Map<String, String> urlVariables = HttpHelpers.parseHttpParameters(urlParameters, DEFAULT_ENCODING);
             result.setParameters(urlVariables);
+            result.setQueryString(urlParameters);
         }
         if (WebMethod.HttpMethod.POST.name().equalsIgnoreCase(exchange.getRequestMethod())) {
             BufferedReader r = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));

@@ -5,7 +5,7 @@ public class ShoppingItem {
     ItemCategory category;
 
     Integer id;
-
+    
     Integer quantity = 1;
 
     String description;

@@ -15,23 +15,29 @@ import org.shoppingassistant.ShoppingItem;
 import org.snowflake.utils.Console;
 
 /**
- * Part of the example in {@link InterceptedShoppingAssistant}. Instances of
- * this class will be passed to controller methods by activating
+ * Part of the example in {@link ShoppingListItemController}. Instances of this
+ * class will be passed to controller methods by activating
  * {@link DaoRequestInterceptor} as a request interceptor. See
- * {@link InterceptedShoppingAssistant#main(String[])}
+ * {@link ShoppingListItemController#main(String[])}
  * 
  * @author haugeto
  */
 public class DataAccessObject {
 
-    static final Map<Integer, ShoppingItem> database = new LinkedHashMap<Integer, ShoppingItem>();
+    static final Map<Integer, ShoppingList> database = new LinkedHashMap<Integer, ShoppingList>();
 
     static {
-        // initialize some data:
-        database.put(1, new ShoppingItem(1, ItemCategory.MEAT, "Entrecote", 2));
+        ShoppingList list1 = new ShoppingList(1, "Dinner party");
+        list1.getShoppingListItems().add(new ShoppingListItem(1, 1, ItemCategory.SEAFOOD, "Salmon", 1));
+        list1.getShoppingListItems().add(new ShoppingListItem(2, 1, ItemCategory.VEGETABLES, "Carrots", 10));
+        database.put(list1.getId(), list1);
+        ShoppingList list2 = new ShoppingList(2, "Easter lunch");
+        list2.getShoppingListItems().add(new ShoppingListItem(3, 2, ItemCategory.DIARY, "Milk", 5));
+        list2.getShoppingListItems().add(new ShoppingListItem(4, 2, ItemCategory.DIARY, "Butter", 1));
+        database.put(list2.getId(), list2);
     }
 
-    private Map<Integer, ShoppingItem> shoppingItems;
+    private Map<Integer, ShoppingList> shoppingLists;
 
     int id;
 
@@ -39,11 +45,19 @@ public class DataAccessObject {
 
     public DataAccessObject(int id) {
         this.id = id;
-        this.shoppingItems = database;
+        this.shoppingLists = database;
     }
 
-    public Set<ShoppingItem> retrieveAllShoppingItems() {
-        return new LinkedHashSet<ShoppingItem>(this.shoppingItems.values());
+    public Set<ShoppingList> retrieveAllShoppingLists() {
+        return new LinkedHashSet<ShoppingList>(shoppingLists.values());
+    }
+    
+    public Set<ShoppingListItem> retrieveAllShoppingItems() {
+        LinkedHashSet<ShoppingListItem> result = new LinkedHashSet<ShoppingListItem>();
+        for (ShoppingList list : this.shoppingLists.values()) {
+            result.addAll(list.getShoppingListItems());
+        }
+        return result;
     }
 
     public void assertIsOpen() {
@@ -51,9 +65,16 @@ public class DataAccessObject {
             throw new IllegalStateException("DataAccessObject not opened");
     }
 
-    public ShoppingItem retrieveShoppingItemById(int id) {
+    public ShoppingListItem retrieveShoppingItemById(int id) {
         assertIsOpen();
-        return this.shoppingItems.get(id);
+        for (ShoppingList list : this.shoppingLists.values()) {
+            for (ShoppingListItem item : list.getShoppingListItems()) {
+                if (item.getId() == id) {
+                    return item;
+                }
+            }
+        }
+        return null;
     }
 
     public void open() {
@@ -69,22 +90,33 @@ public class DataAccessObject {
 
     public void removeShoppingItem(Integer id) {
         assertIsOpen();
-        this.shoppingItems.remove(id);
+        this.shoppingLists.remove(id);
     }
 
-    public void createOrUpdate(ShoppingItem shoppingItem) {
+    public void createOrUpdate(ShoppingList shoppingList) {
+        if (shoppingList.getId() == null) {
+            shoppingList.setId(shoppingLists.size() + 1);
+        }
+        if (shoppingLists.containsKey(shoppingList.getId()))
+            shoppingLists.remove(shoppingList);
+
+        this.shoppingLists.put(shoppingList.getId(), shoppingList);
+    }
+    
+    public void createOrUpdate(ShoppingListItem shoppingItem) {
         assertIsOpen();
         if (shoppingItem == null)
             return;
 
         if (shoppingItem.getId() == null) {
             int maxValue = 0;
-            for (ShoppingItem each : this.shoppingItems.values()) {
+            for (ShoppingItem each : this.retrieveAllShoppingItems()){
                 maxValue = Math.max(maxValue, each.getId());
             }
             shoppingItem.setId(maxValue + 1);
         }
-        this.shoppingItems.put(shoppingItem.getId(), shoppingItem);
+        ShoppingList shoppingList = this.shoppingLists.get(shoppingItem.getShoppingListId());
+        shoppingList.getShoppingListItems().add(shoppingItem);
     }
 
     public String toString() {

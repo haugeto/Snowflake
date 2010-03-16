@@ -1,11 +1,12 @@
 #macro(options $value $choices)
-    #foreach($choice in $choices)
-        #if ($value == $choice) 
+    #foreach($key in $choices.keySet())
+        #set($choice = $choices.get($key))
+        #if ($value == $key) 
             #set($selected = 'selected="selected"')
         #else
             #set($selected = "") 
         #end
-        <option $selected value="$choice">$choice</option>
+        <option $selected value="$key">$choice</option>
     #end
 #end
 

@@ -1,14 +1,15 @@
 package org.shoppingassistant.advanced;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.shoppingassistant.ShoppingAssistant;
-import org.shoppingassistant.ShoppingItem;
 import org.snowflake.Answer;
+import org.snowflake.InputOptions;
 import org.snowflake.Question;
 import org.snowflake.ValidationException;
-import org.snowflake.devserver.DevServer;
 import org.snowflake.utils.Console;
 
 /**
@@ -21,24 +22,43 @@ import org.snowflake.utils.Console;
  * 
  * @author haugeto
  */
-public class InterceptedShoppingAssistant {
+public class ShoppingListItemController {
 
-    public Collection<ShoppingItem> index(Answer answer, Question question, DataAccessObject dataAccessObject) {
-        Console.println("index received: " + dataAccessObject);
-        answer.setTitle("Welcome!");
-        return dataAccessObject.retrieveAllShoppingItems();
+    public Collection<ShoppingListItem> index(Answer answer, Question question, DataAccessObject dataAccessObject) {
+        if (question.hasParameter("shoppingListId")) {
+            Integer shoppingListId;
+            try {
+                shoppingListId = Integer.parseInt(question.getParameter("shoppingListId"));
+            } catch (NumberFormatException e) {
+                throw new ValidationException("shoppingListId", e.getMessage());
+            }
+            Set<ShoppingListItem> result = new LinkedHashSet<ShoppingListItem>();
+            for (ShoppingListItem item : dataAccessObject.retrieveAllShoppingItems()) {
+                if (shoppingListId.equals(item.getShoppingListId())) {
+                    result.add(item);
+                }
+            }
+            return result;
+        } else {
+            return dataAccessObject.retrieveAllShoppingItems();
+        }
     }
 
-    public ShoppingItem add() {
-        return new ShoppingItem();
+    public ShoppingListItem add() {
+        return new ShoppingListItem();
     }
 
-    public ShoppingItem edit(Answer answer, Integer id, DataAccessObject dataAccessObject) {
+    public ShoppingListItem edit(Answer answer, Integer id, DataAccessObject dataAccessObject) {
         Console.println("edit received: " + dataAccessObject);
+        InputOptions shoppingListChoice = new InputOptions("shoppingListId");
+        for (ShoppingList list : dataAccessObject.retrieveAllShoppingLists()) {
+            shoppingListChoice.put(Integer.toString(list.getId()), list.getDescription());
+        }
+        answer.addInputOptions(shoppingListChoice);
         return dataAccessObject.retrieveShoppingItemById(id);
     }
 
-    public void save(ShoppingItem shoppingItem, DataAccessObject dataAccessObject) {
+    public void save(ShoppingListItem shoppingItem, DataAccessObject dataAccessObject) {
         Console.println("Save received: " + dataAccessObject);
 
         ValidationException validationException = new ValidationException();
@@ -54,7 +74,7 @@ public class InterceptedShoppingAssistant {
 
     public void more(Integer id, DataAccessObject dataAccessObject) {
         Console.println("more received: " + dataAccessObject);
-        ShoppingItem shoppingItem = dataAccessObject.retrieveShoppingItemById(id);
+        ShoppingListItem shoppingItem = dataAccessObject.retrieveShoppingItemById(id);
         if (shoppingItem != null) {
             shoppingItem.setQuantity(shoppingItem.getQuantity() + 1);
         }
@@ -63,13 +83,6 @@ public class InterceptedShoppingAssistant {
     public void delete(Question question, Integer id, DataAccessObject dataAccessObject) {
         Console.println("delete received: " + dataAccessObject);
         dataAccessObject.removeShoppingItem(id);
-    }
-
-    public static void main(String[] args) throws Exception {
-        DevServer devServer = new DevServer("Advanced Shopping Assistant", 3000);
-        devServer.addRequestInterceptor(new DaoRequestInterceptor());
-        devServer.registerController("shopping", new InterceptedShoppingAssistant());
-        devServer.run();
     }
 
 }

@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.snowflake.views.scaffolding.TableColumn;
+
 /**
  * Has information about how auto views should be generated. Is initialized by
  * the framework and can be manipulated by client code.
@@ -16,7 +19,10 @@ import java.util.List;
  */
 public class ScaffoldHints {
 
+    // TODO: columnNames probably redundant:
     final List<String> columnNames = new ArrayList<String>();
+
+    final List<TableColumn> tableColumns = new ArrayList<TableColumn>();
 
     final List<WebAction> rowActions = new ArrayList<WebAction>();
 
@@ -28,16 +34,29 @@ public class ScaffoldHints {
     /**
      * Instruct which columns should be displayed in an index table
      */
-    public void columns(String... columnNames) {
-        columns(Arrays.asList(columnNames));
+    public void columns(String... fieldNames) {
+        columns(Arrays.asList(fieldNames));
+
+    }
+
+    public void setColumnLink(String fieldName, String link) {
+        for (TableColumn column : this.tableColumns) {
+            if (fieldName.equals(column.getFieldName())) {
+                column.setLink(link);
+                return;
+            }
+        }
     }
 
     /**
      * Instruct which columns should be displayed in an index table
      */
-    public void columns(Collection<String> columnNames) {
+    public void columns(Collection<String> fieldNames) {
         this.columnNames.clear();
-        this.columnNames.addAll(columnNames);
+        this.columnNames.addAll(fieldNames);
+        for (String name : fieldNames) {
+            tableColumns.add(new TableColumn(name, StringUtils.capitalize(name)));
+        }
     }
 
     public List<String> getColumnNames() {
@@ -66,6 +85,18 @@ public class ScaffoldHints {
 
     public List<WebAction> getPageActions() {
         return new ArrayList<WebAction>(pageActions);
+    }
+
+    public List<TableColumn> getTableColumns() {
+        return new ArrayList<TableColumn>(tableColumns);
+    }
+
+    public TableColumn getTableColumnByFieldName(String name) {
+        for (TableColumn tableColumn : this.tableColumns) {
+            if (name.equals(tableColumn.getFieldName()))
+                return tableColumn;
+        }
+        return null;
     }
 
 }

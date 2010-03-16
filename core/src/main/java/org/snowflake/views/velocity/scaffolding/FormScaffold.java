@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.Answer;
-import org.snowflake.SnowflakeException;
+import org.snowflake.utils.Console;
 import org.snowflake.utils.ReflectionHelpers;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
 import org.snowflake.views.scaffolding.Scaffold;
@@ -54,8 +54,9 @@ public class FormScaffold implements Scaffold {
                 generator = resolveGenerator(fieldType);
             }
             if (generator == null) {
-                throw new SnowflakeException("Cannot generate HTML input field for " + fieldName
-                        + " (a public field in " + dataObjectType + ")");
+                Console.println("Warning: Cannot generate HTML input field for " + fieldName + " (a public field in "
+                        + dataObjectType + ")");
+                continue;
             }
             writer.println("<p><label for=\"" + fieldName + "\">" + fieldName + "</label>"
                     + generator.generate(fieldName, dataObjectName, fieldType)

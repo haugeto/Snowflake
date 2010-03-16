@@ -140,7 +140,7 @@ public class ReflectionHelpers {
     public static Map<String, Class<?>> publicFields(Class<?> target) {
         Map<String, Class<?>> result = new LinkedHashMap<String, Class<?>>();
         for (Method m : target.getMethods()) {
-            if (m.getName().startsWith("get") && m.getName().length() > 3 && m.getDeclaringClass().equals(target)) {
+            if (m.getName().startsWith("get") && m.getName().length() > 3 && !m.getDeclaringClass().equals(Object.class)) {
                 result.put(deduceFieldNameFromGetter(m.getName()), m.getReturnType());
             }
         }

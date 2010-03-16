@@ -34,8 +34,7 @@ public class ShoppingAssistant {
     Map<Integer, ShoppingItem> shoppingItems = new LinkedHashMap<Integer, ShoppingItem>();
 
     public ShoppingAssistant() {
-        // Put a sample data object in our "database"
-        shoppingItems.put(1, new ShoppingItem(1, ItemCategory.MEAT, "Entrecote", 2));
+
     }
 
     /**
@@ -103,7 +102,7 @@ public class ShoppingAssistant {
 
         if (shoppingItem.getId() == null) {
             // Yes, I know. This is a horrible way of generating an id.
-            shoppingItem.setId(shoppingItems.size());
+            shoppingItem.setId(shoppingItems.size() + 1);
         }
         shoppingItems.put(shoppingItem.getId(), shoppingItem);
     }

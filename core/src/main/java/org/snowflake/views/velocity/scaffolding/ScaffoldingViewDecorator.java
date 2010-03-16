@@ -1,16 +1,24 @@
 package org.snowflake.views.velocity.scaffolding;
 
 import java.io.OutputStream;
-
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.velocity.runtime.resource.loader.StringResourceLoader;
 import org.apache.velocity.runtime.resource.util.StringResourceRepository;
 import org.snowflake.Answer;
+import org.snowflake.Question;
+import org.snowflake.ScaffoldHints;
+import org.snowflake.WebAction;
 import org.snowflake.WebApp;
 import org.snowflake.WebMethod;
+import org.snowflake.WebPage;
+import org.snowflake.utils.ReflectionHelpers;
 import org.snowflake.views.View;
 import org.snowflake.views.scaffolding.Scaffold;
+import org.snowflake.views.scaffolding.TableColumn;
 
 /**
  * <p>
@@ -36,7 +44,10 @@ public class ScaffoldingViewDecorator implements View {
     }
 
     @Override
-    public void renderView(WebMethod webMethod, Answer answer, OutputStream out) throws Exception {
+    public void renderView(WebMethod webMethod, Question question, Answer answer, OutputStream out) throws Exception {
+        ScaffoldHints scaffoldHints = answer.getScaffoldHints();
+        initializeUrls(question, scaffoldHints.getPageActions());
+
         String autoTemplateName = answer.getTemplateFile() + ".auto";
         String autoTemplateContent = null;
         answer.setTemplateFile(autoTemplateName);
@@ -50,6 +61,19 @@ public class ScaffoldingViewDecorator implements View {
         case SUBMIT:
         case INDEX:
         default:
+            if (answer.hasIndexData()) {
+                Collection<?> c = answer.getIndexData();
+                if (!c.isEmpty()) {
+                    Object firstObject = c.iterator().next();
+                    if (scaffoldHints.getColumnNames().isEmpty()) {
+                        scaffoldHints.columns(ReflectionHelpers.publicFieldNames(firstObject));
+                    }
+                    Class<?> rowType = firstObject.getClass();
+                    if (rowType != null)
+                        initColumnLinks(rowType, scaffoldHints);
+                }
+                initializeUrls(question, scaffoldHints.getRowActions());
+            }
             scaffold = new IndexScaffold();
             break;
         }
@@ -63,7 +87,42 @@ public class ScaffoldingViewDecorator implements View {
         StringResourceRepository repo = StringResourceLoader.getRepository();
         repo.putStringResource(autoTemplateName, autoTemplateContent);
         webApp.setPreviouslyGeneratedScaffold(deduceTemplateFileName(autoTemplateName), autoTemplateContent);
-        decoratedView.renderView(webMethod, answer, out);
+        decoratedView.renderView(webMethod, question, answer, out);
+    }
+
+    void initColumnLinks(Class<?> rowType, ScaffoldHints scaffoldHints) {
+        Map<String, Class<?>> fields = ReflectionHelpers.publicFields(rowType);
+        for (String fieldName : fields.keySet()) {
+            Class<?> fieldType = fields.get(fieldName);
+            if (Set.class.isAssignableFrom(fieldType)) {
+                String collectionTypeName = rowType.getPackage().getName() + "."
+                        + StringUtils.capitalize(fieldName.substring(0, fieldName.length() - 1));
+                Class<?> type;
+                try {
+                    type = Class.forName(collectionTypeName);
+                } catch (ClassNotFoundException e) {
+                    // convention attempt unsuccessful. No link can be
+                    // generated.
+                    return;
+                }
+
+                WebMethod indexMethod = webApp.indexMethodForType(type);
+                if (indexMethod != null) {
+                    TableColumn tableColumn = scaffoldHints.getTableColumnByFieldName(fieldName);
+                    String paramName = StringUtils.uncapitalize(rowType.getSimpleName());
+                    tableColumn.setLink(indexMethod.getUrl() + "?" + paramName + "Id=$!entry.Id");
+                }
+            }
+        }
+    }
+
+    void initializeUrls(Question question, Iterable<WebAction> webActions) {
+        for (WebAction webAction : webActions) {
+            WebPage actionPage = webApp.getWebPageForController(webAction.getController());
+            WebMethod actionMethod = actionPage.getWebMethodByName(webAction.getMethodName());
+            webAction.setDescription(actionMethod.getName());
+            webAction.setUrl(actionMethod.getUrl());
+        }
     }
 
     static String deduceTemplateFileName(String autoTemplateName) {

@@ -9,6 +9,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.snowflake.argumentinjection.ArgumentsBuilder;
+import org.snowflake.devserver.DevServer;
 
 public class WebRequestTest {
     @Test
@@ -46,7 +47,7 @@ public class WebRequestTest {
         WebMethod methodWithCustomArg = new WebMethod(TestPage.class.getMethod("methodWithTestDataObjectArg",
                 TestDataObject.class));
         methodWithCustomArg.initializeArgs(null);
-        WebApp webApp = new WebApp();
+        WebApp webApp = new DevServer("");
         WebRequest request3 = new WebRequest(webApp, webPage, methodWithCustomArg, question, answer);
         Object[] methodWithCustomArgArgs = new ArgumentsBuilder(request3).buildArguments(methodWithCustomArg
                 .getMethod());

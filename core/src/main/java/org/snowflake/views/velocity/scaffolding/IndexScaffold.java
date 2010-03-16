@@ -2,9 +2,6 @@ package org.snowflake.views.velocity.scaffolding;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.Answer;
@@ -12,20 +9,15 @@ import org.snowflake.ScaffoldHints;
 import org.snowflake.WebAction;
 import org.snowflake.views.scaffolding.Scaffold;
 import org.snowflake.views.scaffolding.ScaffoldingHelper;
+import org.snowflake.views.scaffolding.TableColumn;
 
 public class IndexScaffold implements Scaffold {
 
     public String generate(Answer answer) throws Exception {
         String title;
-        String pluralName = null;
         String singularName = "entry";
-        final List<String> headers = new ArrayList<String>();
 
         ScaffoldHints scaffoldHints = answer.getScaffoldHints();
-        if (answer.hasIndexData()) {
-            headers.addAll(scaffoldHints.getColumnNames());
-            pluralName = answer.getIndexDataName();
-        }
         title = ScaffoldingHelper.createPluralTitle(answer.getIndexData());
         if (title == null) {
             title = "Empty collection";
@@ -37,17 +29,24 @@ public class IndexScaffold implements Scaffold {
         if (answer.hasIndexData()) {
             writer.println("<table cellpadding=\"4\" border=\"1\">");
             writer.println("<thead>\n<tr>");
-            for (String columnTitle : headers) {
-                writer.println("<th>" + columnTitle + "</th>");
+            for (TableColumn columnTitle : scaffoldHints.getTableColumns()) {
+                writer.println("<th>" + columnTitle.getTitle() + "</th>");
             }
             if (!scaffoldHints.getRowActions().isEmpty()) {
                 writer.println("<th>Actions</th></tr>\n</thead>\n<tbody>");
             }
 
-            writer.println("#foreach($" + singularName + " in $" + pluralName + ")");
+            writer.println("#foreach($" + singularName + " in $" + answer.getIndexDataName() + ")");
             writer.println("\t<tr>");
-            for (String key : headers) {
-                writer.println("\t\t<td>$!" + singularName + "." + StringUtils.capitalize(key) + "</td>");
+            for (TableColumn column : scaffoldHints.getTableColumns()) {
+                writer.print("\t\t<td>");
+                if (column.hasLink()) {
+                    writer.print("<a href=\"" + column.getLink() + "\">"
+                            + StringUtils.capitalize(column.getFieldName()) + "</a>");
+                } else {
+                    writer.print("$!" + singularName + "." + StringUtils.capitalize(column.getFieldName()));
+                }
+                writer.println("</td>");
             }
             if (!scaffoldHints.getRowActions().isEmpty()) {
                 writer.print("\t\t<td>");

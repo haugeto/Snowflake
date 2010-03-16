@@ -4,10 +4,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -63,7 +65,44 @@ public class WebPage {
         initializeShowSubmitFormCycle(webMethods);
         Collections.sort(webMethods);
 
+        moveOverloadsToDefaultMethod(webMethods);
+
         this.webMethods.addAll(webMethods);
+    }
+
+    protected void moveOverloadsToDefaultMethod(List<WebMethod> webMethods) {
+        Map<String, Set<WebMethod>> methodMap = new HashMap<String, Set<WebMethod>>();
+
+        for (WebMethod webMethod : webMethods) {
+            String name = webMethod.getName();
+            if (!methodMap.containsKey(name)) {
+                methodMap.put(name, new HashSet<WebMethod>());
+            }
+            methodMap.get(name).add(webMethod);
+        }
+
+        for (String name : methodMap.keySet()) {
+            Set<WebMethod> overloadingMethodSet = methodMap.get(name);
+            String controllerClass = overloadingMethodSet.iterator().next().getMethod().getDeclaringClass().getName();
+            if (overloadingMethodSet.size() > 1) {
+                WebMethod defaultMethod = null;
+                for (WebMethod webMethod : overloadingMethodSet) {
+                    if (!webMethod.hasHttpArg()) {
+                        defaultMethod = webMethod;
+                        break;
+                    }
+                }
+                if (defaultMethod == null) {
+                    throw new SnowflakeException("Cannot deduce default method for overloaded methods \"" + name
+                            + "\" (class " + controllerClass + "): There must be one \"" + name
+                            + "\" method without custom HTTP arguments");
+                }
+
+                overloadingMethodSet.remove(defaultMethod);
+                webMethods.removeAll(overloadingMethodSet);
+                defaultMethod.addOverloadingMethods(overloadingMethodSet);
+            }
+        }
     }
 
     void initializeViewMethods(Collection<WebMethod> webMethods, WebMethod reuseViewMethod) {

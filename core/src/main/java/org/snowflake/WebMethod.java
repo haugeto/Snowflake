@@ -36,6 +36,8 @@ public class WebMethod implements Comparable<WebMethod> {
 
     public static final String DEFAULT_METHOD_NAME = "index";
 
+    final Set<WebMethod> overloadingMethods = new HashSet<WebMethod>();
+
     WebMethodType type;
 
     /** Typically the submit method in a show-form-submit-form cycle */
@@ -192,6 +194,11 @@ public class WebMethod implements Comparable<WebMethod> {
 
     public void setView(View view) {
         this.view = view;
+        if (isOverloaded()) {
+            for (WebMethod webMethod : overloadingMethods) {
+                webMethod.view = view;
+            }
+        }
     }
 
     public Class<?> getHttpArgType() {
@@ -269,6 +276,18 @@ public class WebMethod implements Comparable<WebMethod> {
 
     public void setReuseViewMethod(WebMethod viewMethod) {
         this.reuseViewMethod = viewMethod;
+    }
+
+    public void addOverloadingMethods(Collection<WebMethod> methods) {
+        this.overloadingMethods.addAll(methods);
+    }
+
+    public Set<WebMethod> getOverloadingMethods() {
+        return new HashSet<WebMethod>(overloadingMethods);
+    }
+
+    public boolean isOverloaded() {
+        return !this.overloadingMethods.isEmpty();
     }
 
 }

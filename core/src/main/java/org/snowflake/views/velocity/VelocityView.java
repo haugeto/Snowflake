@@ -16,6 +16,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.snowflake.Answer;
 import org.snowflake.InputOptions;
+import org.snowflake.Question;
 import org.snowflake.WebMethod;
 import org.snowflake.utils.CollectionHelpers;
 import org.snowflake.views.View;
@@ -32,7 +33,7 @@ public class VelocityView implements View {
     }
 
     @Override
-    public void renderView(WebMethod webMethod, Answer answer, OutputStream out) throws Exception {
+    public void renderView(WebMethod webMethod, Question question, Answer answer, OutputStream out) throws Exception {
         VelocityContext viewContext = createViewContext(answer);
         Template template = null;
         template = velocityEngine.getTemplate(answer.getTemplateFile());
@@ -79,7 +80,7 @@ public class VelocityView implements View {
             result.put(answer.getIndexDataName(), answer.getIndexData());
         }
         for (InputOptions inputOptions : answer.getInputOptions()) {
-            result.put(inputOptions.getFieldName() + "Choices", inputOptions.getNameValues().values());
+            result.put(inputOptions.getFieldName() + "Choices", inputOptions.getNameValues());
         }
         return result;
     }

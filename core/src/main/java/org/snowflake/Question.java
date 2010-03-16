@@ -24,6 +24,8 @@ public class Question {
 
     final Map<String, Object> attributes = new HashMap<String, Object>();
 
+    String queryString;
+
     public void setAttribute(String name, Object value) {
         this.attributes.put(name, value);
     }
@@ -91,6 +93,22 @@ public class Question {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("url", url).append("id", id).append(
                 "parameters", parameters).append("attributes", attributes).toString();
+    }
+
+    public boolean hasParameters() {
+        return !(this.parameters.isEmpty() && getId() == null);
+    }
+
+    public boolean hasParameter(String key) {
+        return this.parameters.containsKey(key);
+    }
+
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
+
+    public String getQueryString() {
+        return queryString;
     }
 
 }

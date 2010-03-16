@@ -76,6 +76,18 @@ public class DevServer extends WebApp {
     }
 
     protected void afterStart(HttpServer httpServer) {
+        warnAboutOverloading();
+    }
+    
+    public void warnAboutOverloading() {
+        for (WebPage webPage : webPages.values()) {
+            for (WebMethod webMethod : webPage.getWebMethods()) {
+                if (webMethod.isOverloaded()) {
+                    Console.println("Warning: Overloaded methods not supported (methods \"" + webMethod.getName() + "\" of "
+                            + webMethod.getMethod().getDeclaringClass() + ")");
+                }
+            }
+        }
     }
 
     protected void initializeDynamicContentContexts() {
@@ -116,6 +128,11 @@ public class DevServer extends WebApp {
 
     public int getPort() {
         return port;
+    }
+
+    public void setPreviouslyGeneratedScaffold(String name, String content) {
+        Console.put("previouslyGeneratedScaffold.name", name);
+        Console.put("previouslyGeneratedScaffold.content", content);
     }
 
 }

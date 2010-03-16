@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,9 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.snowflake.WebMethod;
-import org.snowflake.WebMethodType;
-import org.snowflake.WebPage;
 
 public class WebPageTest {
 
@@ -109,6 +107,29 @@ public class WebPageTest {
         assertNotNull(methodWithIgnoreArg);
         assertSame(WebMethod.HttpMethod.GET, methodWithIgnoreArg.getHttpMethod());
         assertTrue(methodWithIgnoreArg.hasHttpArg);
+    }
+
+    @Test
+    public void testCreateWebMethodsHandlesOverloading() {
+        OverloadedController controller = new OverloadedController();
+        WebPage webPage = new WebPage(controller, "/");
+        assertEquals(1, webPage.getWebMethods().size());
+        WebMethod indexMethod = webPage.getWebMethodByName("index");
+        assertNotNull(indexMethod);
+        assertEquals(1, indexMethod.getOverloadingMethods().size());
+        assertEquals("index", indexMethod.getOverloadingMethods().iterator().next().getName());
+    }
+
+    class OverloadedController {
+
+        public Collection<Object> index() {
+            return null;
+        }
+
+        public Collection<Object> index(int id) {
+            return null;
+        }
+
     }
 
 }

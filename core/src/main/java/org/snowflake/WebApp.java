@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.snowflake.fieldconverters.FieldConverter;
-import org.snowflake.utils.Console;
 import org.snowflake.views.ViewFactory;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
 import org.snowflake.views.velocity.VelocityViewFactory;
@@ -32,7 +31,7 @@ import org.snowflake.views.velocity.VelocityViewFactory;
  * 
  * @author haugeto
  */
-public class WebApp {
+public abstract class WebApp {
 
     public static final String SNOWFLAKE_CSS = "/static/org/snowflake/snowflake.css";
 
@@ -117,11 +116,6 @@ public class WebApp {
         return new LinkedHashMap<Object, WebPage>(this.webPages);
     }
 
-    public void setPreviouslyGeneratedScaffold(String name, String content) {
-        Console.put("previouslyGeneratedScaffold.name", name);
-        Console.put("previouslyGeneratedScaffold.content", content);
-    }
-
     public void add(FormFieldTemplateGenerator generator) {
         formFieldTemplateGenerators.add(generator);
     }
@@ -183,5 +177,40 @@ public class WebApp {
     public void setDefaultViewCss(String defaultViewCss) {
         this.defaultViewCss = defaultViewCss;
     }
+
+    public WebPage pageForWebMethod(WebMethod webMethod) {
+        for (WebPage webPage : this.webPages.values()) {
+            if (webPage.getWebMethods().contains(webMethod)) {
+                return webPage;
+            }
+        }
+        return null;
+    }
+
+    public Class<?> deduceCollectionType(WebMethod indexMethod) {
+        WebPage page = pageForWebMethod(indexMethod);
+        for (WebMethod webMethod : page.getWebMethods()) {
+            if (webMethod.getType() == WebMethodType.SUBMIT) {
+                return webMethod.getHttpArgType();
+            }
+        }
+        return null;
+    }
+
+    public WebMethod indexMethodForType(Class<?> fieldType) {
+        for (WebPage webPage : getWebPages().values()) {
+            Set<WebMethod> webMethods = webPage.getWebMethods();
+            for (WebMethod webMethod : webMethods) {
+                if (webMethod.getHttpArgType() == fieldType) {
+                    if (webMethod.getType() == WebMethodType.SUBMIT) {
+                        return webPage.getWebMethodByName("index");
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public abstract void setPreviouslyGeneratedScaffold(String deduceTemplateFileName, String autoTemplateContent);
 
 }
