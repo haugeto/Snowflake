@@ -3,6 +3,7 @@
  */
 package org.shoppingassistant.advanced;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class DataAccessObject {
     public Set<ShoppingList> retrieveAllShoppingLists() {
         return new LinkedHashSet<ShoppingList>(shoppingLists.values());
     }
-    
+
     public Set<ShoppingListItem> retrieveAllShoppingItems() {
         LinkedHashSet<ShoppingListItem> result = new LinkedHashSet<ShoppingListItem>();
         for (ShoppingList list : this.shoppingLists.values()) {
@@ -90,7 +91,14 @@ public class DataAccessObject {
 
     public void removeShoppingItem(Integer id) {
         assertIsOpen();
-        this.shoppingLists.remove(id);
+        for (ShoppingList list : this.shoppingLists.values()) {
+            for (Iterator<ShoppingListItem> i = list.shoppingListItems.iterator(); i.hasNext();) {
+                if (i.next().getId() == id) {
+                    i.remove();
+                    break;
+                }
+            }
+        }
     }
 
     public void createOrUpdate(ShoppingList shoppingList) {
@@ -102,7 +110,7 @@ public class DataAccessObject {
 
         this.shoppingLists.put(shoppingList.getId(), shoppingList);
     }
-    
+
     public void createOrUpdate(ShoppingListItem shoppingItem) {
         assertIsOpen();
         if (shoppingItem == null)
@@ -110,7 +118,7 @@ public class DataAccessObject {
 
         if (shoppingItem.getId() == null) {
             int maxValue = 0;
-            for (ShoppingItem each : this.retrieveAllShoppingItems()){
+            for (ShoppingItem each : this.retrieveAllShoppingItems()) {
                 maxValue = Math.max(maxValue, each.getId());
             }
             shoppingItem.setId(maxValue + 1);

@@ -1,6 +1,7 @@
 package org.snowflake;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -12,12 +13,14 @@ import org.snowflake.Question;
 @Ignore
 public class TestPage {
 
+    Set<TestDataObject> testDataObjects = new HashSet<TestDataObject>();
+
     public void foo(Answer answer) {
 
     }
 
-    public void index(Question question, Answer answer) {
-
+    public Collection<TestDataObject> index(Question question, Answer answer) {
+        return testDataObjects;
     }
 
     public TestDataObject someMethod(int id) {

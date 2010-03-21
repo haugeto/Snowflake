@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.velocity.Template;
@@ -72,9 +71,9 @@ public class VelocityView implements View {
             result.put("postBackUrl", answer.getNextUrl());
         }
         if (answer.hasFormData()) {
-            Map<String, Object> fieldValues = new LinkedHashMap<String, Object>(answer.getFormData());
-            CollectionHelpers.capitalizeKeys(fieldValues);
-            result.put(answer.getFormDataName(), fieldValues);
+            Map<String, Object> formData = answer.getFormData();
+            CollectionHelpers.capitalizeKeys(formData);
+            result.put(answer.getFormDataName(), formData);
         }
         if (answer.hasIndexData()) {
             result.put(answer.getIndexDataName(), answer.getIndexData());

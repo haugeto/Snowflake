@@ -22,13 +22,16 @@ public class StaticContentController {
      *             If requested file is not a {@link ContentType supported type}
      */
     public Object index(Question question, Answer answer) throws FileNotFoundException, SnowflakeException {
+        if (StringUtils.isEmpty(question.getUrl())) {
+            throw new IllegalArgumentException("No URL specified");
+        }
         String filePath = StringUtils.substringAfter(question.getUrl(), "/static/");
         URL resource;
         try {
             resource = getClass().getClassLoader().getResource(filePath);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new SnowflakeException(e);
+            throw new SnowflakeException("Error loading resource \"" + filePath + "\"", e);
         }
         if (resource == null) {
             answer.setHttpCode(404);

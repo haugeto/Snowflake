@@ -20,7 +20,7 @@ public class WebPageTest {
     @Test
     public void testCreateWebMethodsFindsEditAndSubmitMethods() {
         WebPage webPage = new WebPage(new CrudPage());
-        webPage.createWebMethods("/", null);
+        webPage.createWebMethods(new HashSet<Class<?>>());
         Set<WebMethod> webMethods = webPage.webMethods;
 
         Map<WebMethodType, WebMethod> operations = new HashMap<WebMethodType, WebMethod>();
@@ -45,7 +45,7 @@ public class WebPageTest {
     @Test
     public void testCreateWebMethodsHandlesCustomMethods() {
         WebPage webPage = new WebPage(new CrudPage());
-        webPage.createWebMethods("/", null);
+        webPage.createWebMethods(new HashSet<Class<?>>());
         Set<WebMethod> webMethods = webPage.webMethods;
         WebMethod customOp = null;
         for (WebMethod webMethod : webMethods) {
@@ -62,6 +62,7 @@ public class WebPageTest {
     @Test
     public void testCreateWebMethodsDoesntIncludeNonWebMethods() {
         WebPage webPage = new WebPage(new TestPage());
+        webPage.createWebMethods(new HashSet<Class<?>>());
         Set<WebMethod> webMethods = webPage.webMethods;
         assertEquals(7, webMethods.size());
         HashSet<String> methodNames = new HashSet<String>();
@@ -79,7 +80,7 @@ public class WebPageTest {
     @Test
     public void testGetActionMethods() {
         WebPage webPage = new WebPage(new TestPage());
-        webPage.createWebMethods("/", null);
+        webPage.createWebMethods(new HashSet<Class<?>>());
 
         List<WebMethod> webMethods = webPage.rowActionWebMethods();
         assertNotNull(webMethods);
@@ -99,9 +100,10 @@ public class WebPageTest {
             public void methodWithIgnoreArg(Answer a, Question q, int i, WebPageTest webPageTest) {
             }
         };
+        WebPage webPage = new WebPage(controller, "/");
         Set<Class<?>> ignoreArgs = new HashSet<Class<?>>();
         ignoreArgs.add(WebPageTest.class);
-        WebPage webPage = new WebPage(controller, "/", ignoreArgs);
+        webPage.createWebMethods(ignoreArgs);
 
         WebMethod methodWithIgnoreArg = webPage.getWebMethodByName("methodWithIgnoreArg");
         assertNotNull(methodWithIgnoreArg);
@@ -113,6 +115,7 @@ public class WebPageTest {
     public void testCreateWebMethodsHandlesOverloading() {
         OverloadedController controller = new OverloadedController();
         WebPage webPage = new WebPage(controller, "/");
+        webPage.createWebMethods(new HashSet<Class<?>>());
         assertEquals(1, webPage.getWebMethods().size());
         WebMethod indexMethod = webPage.getWebMethodByName("index");
         assertNotNull(indexMethod);

@@ -75,8 +75,7 @@ public class WebMethod implements Comparable<WebMethod> {
     }
 
     public boolean isVoidMethod() {
-        boolean r = method.getReturnType() == Void.TYPE;
-        return r;
+        return method.getReturnType() == Void.TYPE;
     }
 
     public void initializeArgs(Set<Class<?>> argTypesToIgnore) {
@@ -235,6 +234,11 @@ public class WebMethod implements Comparable<WebMethod> {
     }
 
     public void initializeUrl(String baseUrl) {
+        if (baseUrl == null || "/".equals(url))
+            baseUrl = "";
+        if (baseUrl.length() > 0 && !baseUrl.startsWith("/")) {
+            baseUrl = "/" + baseUrl;
+        }
         String urlSuffix;
         if (WebMethodType.INDEX == getType()) {
             urlSuffix = (baseUrl.isEmpty()) ? "/" : "";

@@ -1,16 +1,25 @@
 package org.snowflake;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.snowflake.utils.HttpHelpers;
 
 /**
  * <p>
@@ -38,16 +47,11 @@ public class WebPage {
     }
 
     public WebPage(Object controller, String baseUrl) {
-        this(controller, baseUrl, new HashSet<Class<?>>());
-    }
-
-    public WebPage(Object controller, String baseUrl, Set<Class<?>> argumentTypesToIgnore) {
         this.controller = controller;
         this.baseUrl = baseUrl;
-        createWebMethods(baseUrl, argumentTypesToIgnore);
     }
 
-    void createWebMethods(String baseUrl, Set<Class<?>> argumentTypesToIgnore) {
+    public void createWebMethods(Set<Class<?>> argumentTypesToIgnore) {
         List<WebMethod> webMethods = new ArrayList<WebMethod>();
         for (Method method : getController().getClass().getMethods()) {
             if (WebMethod.isWebMethod(method)) {
@@ -185,5 +189,61 @@ public class WebPage {
 
     public String getBaseUrl() {
         return baseUrl;
+    }
+
+    public Integer parseId(String requestUrl, Map<String, String> urlParams, Map<String, String> formData) {
+        List<String> candidates = new ArrayList<String>();
+
+        String urlFragment = StringUtils.substringBefore(requestUrl, "?");
+        String idStr = StringUtils.substringAfterLast(urlFragment, "/");
+        if (idStr.length() > 0)
+            candidates.add(idStr);
+
+        if (formData.containsKey("id"))
+            candidates.add(urlParams.get("id"));
+
+        if (urlParams.containsKey("id"))
+            candidates.add(urlParams.get("id"));
+
+        for (String candidate : candidates)
+            try {
+                return Integer.parseInt(candidate);
+            } catch (NumberFormatException e) {
+            }
+
+        return null;
+    }
+
+    public Class<?> getIdType() {
+        return Integer.class;
+    }
+
+    public Question parseRequest(InputStream requestBody, String httpMethod, URI requestURI, String boundUrl)
+            throws IOException {
+        Question result = new Question();
+        String incomingUrl = requestURI.getPath();
+        result.setUrl(incomingUrl);
+
+        // parse URL get parameters, if any
+        Map<String, String> urlVariables = new LinkedHashMap<String, String>();
+        String urlParameters = requestURI.getQuery();
+        if (!StringUtils.isEmpty(urlParameters)) {
+            urlVariables.putAll(HttpHelpers.parseHttpParameters(urlParameters, Question.DEFAULT_ENCODING));
+            result.setParameters(urlVariables);
+            result.setQueryString(urlParameters);
+        }
+        Map<String, String> httpVariables = new LinkedHashMap<String, String>();
+        if (WebMethod.HttpMethod.POST.name().equalsIgnoreCase(httpMethod)) {
+            BufferedReader r = new BufferedReader(new InputStreamReader(requestBody));
+            String requestBodyContent = r.readLine();
+            if (requestBodyContent != null) {
+                // TODO: Figure out the clients enc
+                httpVariables.putAll(HttpHelpers.parseHttpParameters(requestBodyContent, Question.DEFAULT_ENCODING));
+                // FIXME: This overwrites possible URL parameters
+                result.setParameters(httpVariables);
+            }
+        }
+        result.setId(parseId(incomingUrl, urlVariables, httpVariables));
+        return result;
     }
 }

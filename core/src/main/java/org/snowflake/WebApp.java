@@ -61,34 +61,31 @@ public abstract class WebApp {
     /**
      * Register a page as a part of the web application run by this Server.
      * 
-     * @param url
+     * @param baseUrl
      *            Suffix for URLs to be handled by the given controller page
      * @param controller
      *            The client object to handle incoming HTTP requests. NB:
      *            Overloaded methods not supported yet.
      */
-    public void registerController(String url, Object controller) {
+    public void registerController(String baseUrl, Object controller) {
         if (controller == null) {
-            throw new IllegalArgumentException("Cannot map URL \"" + url + "\" to a null reference");
+            throw new IllegalArgumentException("controller cannot be null");
         }
-        if (url == null || "/".equals(url))
-            url = "";
-        if (url.length() > 0 && !url.startsWith("/")) {
-            url = "/" + url;
-        }
-        if (url.startsWith("/static")) {
+        if (baseUrl.startsWith("/static")) {
             throw new IllegalArgumentException("URL prefix \"/static\" is reserved for static content");
         }
+        registerController(new WebPage(controller, baseUrl));
+    }
 
+    public void registerController(WebPage webPage) {
         Set<Class<?>> argumentTypesToIgnore = new HashSet<Class<?>>();
         for (RequestInterceptor<?> requestInterceptor : this.requestInterceptors) {
             Class<?> type = requestInterceptor.getType();
             if (type != null)
                 argumentTypesToIgnore.add(type);
         }
-
-        WebPage webPage = new WebPage(controller, url, argumentTypesToIgnore);
-        this.webPages.put(controller, webPage);
+        webPage.createWebMethods(argumentTypesToIgnore);
+        this.webPages.put(webPage.getController(), webPage);
     }
 
     public void setViewFactory(ViewFactory viewFactory) {

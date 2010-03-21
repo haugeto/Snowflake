@@ -78,13 +78,13 @@ public class DevServer extends WebApp {
     protected void afterStart(HttpServer httpServer) {
         warnAboutOverloading();
     }
-    
+
     public void warnAboutOverloading() {
         for (WebPage webPage : webPages.values()) {
             for (WebMethod webMethod : webPage.getWebMethods()) {
                 if (webMethod.isOverloaded()) {
-                    Console.println("Warning: Overloaded methods not supported (methods \"" + webMethod.getName() + "\" of "
-                            + webMethod.getMethod().getDeclaringClass() + ")");
+                    Console.println("Warning: Overloaded methods not supported (methods \"" + webMethod.getName()
+                            + "\" of " + webMethod.getMethod().getDeclaringClass() + ")");
                 }
             }
         }
@@ -112,7 +112,8 @@ public class DevServer extends WebApp {
     }
 
     protected void initializeStaticContentContexts() {
-        WebPage staticWebPage = new WebPage(new StaticContentController(), "/static", new HashSet<Class<?>>());
+        WebPage staticWebPage = new WebPage(new StaticContentController(), "/static");
+        staticWebPage.createWebMethods(new HashSet<Class<?>>());
         webPages.put("/static", staticWebPage);
         for (WebMethod staticContentMethod : staticWebPage.getWebMethods()) {
             staticContentMethod.setView(new StaticContentView());

@@ -9,23 +9,26 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.snowflake.SnowflakeException;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 public class HttpHelpers {
 
-    public static Map<String, String> parseHttpParameters(String requestBody, String encoding)
-            throws UnsupportedEncodingException {
+    public static Map<String, String> parseHttpParameters(String requestBody, String encoding) {
         Map<String, String> result = new LinkedHashMap<String, String>();
         String[] keyValuePairs = requestBody.split("&");
         for (String keyValuePair : keyValuePairs) {
             String key = StringUtils.substringBefore(keyValuePair, "=");
             String value = StringUtils.substringAfter(keyValuePair, "=");
 
-            key = URLDecoder.decode(key, encoding);
-            value = URLDecoder.decode(value, encoding);
-
+            try {
+                key = URLDecoder.decode(key, encoding);
+                value = URLDecoder.decode(value, encoding);
+            } catch (UnsupportedEncodingException e) {
+                throw new SnowflakeException(e);
+            }
             result.put(key, value);
         }
         return result;

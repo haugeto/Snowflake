@@ -111,9 +111,9 @@ public class WebRequestProcessTest {
         }
 
         @Override
-        public void index(Question question, Answer answer) {
+        public Collection<TestDataObject> index(Question question, Answer answer) {
             indexInvoked = true;
-            super.index(question, answer);
+            return super.index(question, answer);
         }
 
         @Override

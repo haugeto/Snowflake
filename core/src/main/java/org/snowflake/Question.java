@@ -16,6 +16,8 @@ import org.apache.commons.lang.builder.ToStringStyle;
  */
 public class Question {
 
+    public static final String DEFAULT_ENCODING = "UTF-8";
+
     Integer id = null;
 
     String url;
@@ -25,6 +27,14 @@ public class Question {
     final Map<String, Object> attributes = new HashMap<String, Object>();
 
     String queryString;
+
+    public Question() {
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters.clear();
+        this.parameters.putAll(parameters);
+    }
 
     public void setAttribute(String name, Object value) {
         this.attributes.put(name, value);
@@ -60,18 +70,6 @@ public class Question {
 
     public String getParameter(String key) {
         return parameters.get(key);
-    }
-
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters.clear();
-        this.parameters.putAll(parameters);
-        if (parameters.containsKey("id")) {
-            String idStr = parameters.get("id");
-            try {
-                this.id = Integer.parseInt(idStr);
-            } catch (NumberFormatException e) {
-            }
-        }
     }
 
     public Integer getId() {

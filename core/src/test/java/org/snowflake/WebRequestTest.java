@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.junit.Test;
@@ -15,14 +16,14 @@ public class WebRequestTest {
     @Test
     public void testBuildArguments() throws Exception {
         Question question = new Question();
-        Map<String, String> argValues = new HashMap<String, String>();
-        argValues.put("id", "42");
-        question.setParameters(argValues);
+        question.setId(42);
         Answer answer = new Answer();
 
         WebPage webPage = new WebPage(new TestPage(), "/");
+        webPage.createWebMethods(new HashSet<Class<?>>());
         WebMethod someMethod = webPage.getWebMethodByName("someMethod");
         WebRequest webRequest = new WebRequest(null, webPage, someMethod, question, answer);
+        webPage.createWebMethods(new HashSet<Class<?>>());
         someMethod.initializeArgs(null);
         Object[] someMethodArgs = new ArgumentsBuilder(webRequest).buildArguments(webRequest.webMethod.getMethod());
         assertNotNull(someMethodArgs);

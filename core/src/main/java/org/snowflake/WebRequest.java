@@ -112,7 +112,7 @@ public class WebRequest implements ArgumentProducer {
         if (Map.class.isAssignableFrom(type))
             return question.getParameters();
 
-        if (type == Integer.class)
+        if (type == webPage.getIdType())
             return question.getId();
 
         if (type == int.class) {

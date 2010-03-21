@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import org.junit.Test;
@@ -14,8 +15,8 @@ public class WebMethodTest {
     @Test
     public void testInitialize() throws Exception {
         WebPage webPage = new WebPage(new TestPage(), "/");
+        webPage.createWebMethods(new HashSet<Class<?>>());
         WebMethod webMethod = webPage.getWebMethodByName("someMethod");
-
         webMethod.initializeArgs(null);
         assertEquals(int.class, webMethod.getHttpArgType());
     }

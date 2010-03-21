@@ -62,6 +62,21 @@ public abstract class WebRequestDispatcher {
         }
     }
 
+    protected void invokeBeforeInterceptors(Question question, Answer answer,
+            Map<RequestInterceptor<?>, Object> customArgs) throws Exception {
+        for (RequestInterceptor<?> requestInterceptor : webApp.getRequestInterceptors()) {
+            customArgs.put(requestInterceptor, requestInterceptor.before(question, answer));
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected void invokeAfterInterceptors(Question question, Answer answer,
+            Map<RequestInterceptor<?>, Object> customArgs) throws Exception {
+        for (RequestInterceptor requestInterceptor : webApp.getRequestInterceptors()) {
+            requestInterceptor.after(question, answer, customArgs.get(requestInterceptor));
+        }
+    }
+
     /**
      * <p>
      * Process the view logic for a successful web request.
@@ -85,17 +100,14 @@ public abstract class WebRequestDispatcher {
      * Process the view logic for an unsuccessful web request. Optional.
      * </p>
      */
-    protected void processViewOnFailure(WebRequest failedRequest, OutputStream responseBody,
-            SnowflakeException exception) throws Exception {
-        if (exception instanceof ValidationException) {
-            ValidationException validationException = (ValidationException) exception;
-            Map<String, String> errorMessages = validationException.getValidationMessages();
-            for (String fieldName : errorMessages.keySet()) {
-                Console.justify(Console.INDENT + "Validation error [" + errorMessages.get(fieldName) + "]",
-                        "For field \"" + fieldName + "\"", '.');
-            }
-            showFormWithValidationErrors(failedRequest, validationException, responseBody);
+    protected void processViewOnValidationFailure(WebRequest failedRequest, OutputStream responseBody,
+            ValidationException validationException) throws Exception {
+        Map<String, String> errorMessages = validationException.getValidationMessages();
+        for (String fieldName : errorMessages.keySet()) {
+            Console.justify(Console.INDENT + "Validation error [" + errorMessages.get(fieldName) + "]", "For field \""
+                    + fieldName + "\"", '.');
         }
+        showFormWithValidationErrors(failedRequest, validationException, responseBody);
     }
 
     protected void showFormWithValidationErrors(WebRequest failedRequest, ValidationException validationException,
@@ -103,8 +115,7 @@ public abstract class WebRequestDispatcher {
         Question failedQuestion = failedRequest.getQuestion();
         WebMethod showFormMethod = webPage.findPrevious(this.webMethod);
         Answer answer = showFormMethod.createAnswer(failedRequest.getAnswer().getViewCss());
-        answer.setFormData(failedQuestion.getParametersAsObjects());
-        answer.setFormDataType(showFormMethod.getReturnType());
+        answer.setFormData(failedQuestion.getParametersAsObjects(), showFormMethod.getReturnType());
         answer.setValidationMessages(validationException.getValidationMessages());
         Question question = new Question();
         question.setId(failedQuestion.getId());
