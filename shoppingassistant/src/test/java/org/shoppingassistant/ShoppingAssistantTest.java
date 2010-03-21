@@ -28,8 +28,8 @@ public class ShoppingAssistantTest {
     public void setup() {
         shoppingAssistant = new ShoppingAssistant();
         shoppingItem = new ShoppingItem();
-        shoppingItem.setId(1);
-        shoppingAssistant.shoppingItems.put(1, shoppingItem);
+        shoppingItem.setId(1L);
+        shoppingAssistant.shoppingItems.put(1L, shoppingItem);
     }
 
     @Test
@@ -52,7 +52,7 @@ public class ShoppingAssistantTest {
     @Test
     public void saveReplacesOldItem() {
         ShoppingItem fromForm = new ShoppingItem();
-        fromForm.setId(1);
+        fromForm.setId(1L);
         fromForm.setDescription("new description");
         shoppingAssistant.save(new Question(), fromForm);
         assertNotSame(shoppingItem, shoppingAssistant.shoppingItems.get(1));

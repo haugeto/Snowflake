@@ -18,7 +18,7 @@ public class WebMethodTest {
         webPage.createWebMethods(new HashSet<Class<?>>());
         WebMethod webMethod = webPage.getWebMethodByName("someMethod");
         webMethod.initializeArgs(null);
-        assertEquals(int.class, webMethod.getHttpArgType());
+        assertEquals(long.class, webMethod.getHttpArgType());
     }
 
     @Test

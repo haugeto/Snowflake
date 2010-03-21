@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -11,11 +12,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.SnowflakeException;
 
 public class ReflectionHelpers {
+
+    public static final Map<Class<?>, Class<?>> PRIMITIVES_TO_WRAPPERS = new HashMap<Class<?>, Class<?>>();
+
+    static {
+        PRIMITIVES_TO_WRAPPERS.put(boolean.class, Boolean.class);
+        PRIMITIVES_TO_WRAPPERS.put(char.class, Character.class);
+        PRIMITIVES_TO_WRAPPERS.put(byte.class, Byte.class);
+        PRIMITIVES_TO_WRAPPERS.put(short.class, Short.class);
+        PRIMITIVES_TO_WRAPPERS.put(int.class, Integer.class);
+        PRIMITIVES_TO_WRAPPERS.put(long.class, Long.class);
+        PRIMITIVES_TO_WRAPPERS.put(float.class, Float.class);
+        PRIMITIVES_TO_WRAPPERS.put(double.class, Double.class);
+    }
+
+    public static Class<?> wrapperForPrimitive(Class<?> primitive) {
+        if (!primitive.isPrimitive()) {
+            throw new IllegalArgumentException("Argument not a primitive: " + primitive);
+        }
+        return PRIMITIVES_TO_WRAPPERS.get(primitive);
+    }
 
     public static String deduceFieldNameFromGetter(String getterName) {
         if (!(getterName.startsWith("get") || getterName.startsWith("set")) || getterName.length() <= 3) {
@@ -113,7 +133,8 @@ public class ReflectionHelpers {
             } catch (Exception e) {
                 throw new SnowflakeException(e);
             }
-//            String value = (returnValue == null) ? "" : returnValue.toString();
+            // String value = (returnValue == null) ? "" :
+            // returnValue.toString();
             String key = fieldName;
             if (capitalizeKeys)
                 key = StringUtils.capitalize(key);
@@ -140,7 +161,8 @@ public class ReflectionHelpers {
     public static Map<String, Class<?>> publicFields(Class<?> target) {
         Map<String, Class<?>> result = new LinkedHashMap<String, Class<?>>();
         for (Method m : target.getMethods()) {
-            if (m.getName().startsWith("get") && m.getName().length() > 3 && !m.getDeclaringClass().equals(Object.class)) {
+            if (m.getName().startsWith("get") && m.getName().length() > 3
+                    && !m.getDeclaringClass().equals(Object.class)) {
                 result.put(deduceFieldNameFromGetter(m.getName()), m.getReturnType());
             }
         }

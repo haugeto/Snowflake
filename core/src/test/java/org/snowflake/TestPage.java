@@ -23,11 +23,11 @@ public class TestPage {
         return testDataObjects;
     }
 
-    public TestDataObject someMethod(int id) {
+    public TestDataObject someMethod(long id) {
         return new TestDataObject();
     }
 
-    public Collection<?> collectionMethod(int id) {
+    public Collection<?> collectionMethod(long id) {
         Set<TestDataObject> result = new LinkedHashSet<TestDataObject>();
         result.add(new TestDataObject());
         return result;
@@ -36,7 +36,7 @@ public class TestPage {
     public void methodWithMap(Answer answer, Map<String, String> httpArgs) {
     }
 
-    public void methodWithId(Answer answer, int id) {
+    public void methodWithId(Answer answer, long id) {
     }
 
     public void methodWithTestDataObjectArg(TestDataObject testDataObject) {

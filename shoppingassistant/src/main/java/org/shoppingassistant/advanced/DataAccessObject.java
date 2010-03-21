@@ -25,20 +25,20 @@ import org.snowflake.utils.Console;
  */
 public class DataAccessObject {
 
-    static final Map<Integer, ShoppingList> database = new LinkedHashMap<Integer, ShoppingList>();
+    static final Map<Long, ShoppingList> database = new LinkedHashMap<Long, ShoppingList>();
 
     static {
-        ShoppingList list1 = new ShoppingList(1, "Dinner party");
-        list1.getShoppingListItems().add(new ShoppingListItem(1, 1, ItemCategory.SEAFOOD, "Salmon", 1));
-        list1.getShoppingListItems().add(new ShoppingListItem(2, 1, ItemCategory.VEGETABLES, "Carrots", 10));
+        ShoppingList list1 = new ShoppingList(1L, "Dinner party");
+        list1.getShoppingListItems().add(new ShoppingListItem(1L, 1L, ItemCategory.SEAFOOD, "Salmon", 1));
+        list1.getShoppingListItems().add(new ShoppingListItem(2L, 1L, ItemCategory.VEGETABLES, "Carrots", 10));
         database.put(list1.getId(), list1);
-        ShoppingList list2 = new ShoppingList(2, "Easter lunch");
-        list2.getShoppingListItems().add(new ShoppingListItem(3, 2, ItemCategory.DIARY, "Milk", 5));
-        list2.getShoppingListItems().add(new ShoppingListItem(4, 2, ItemCategory.DIARY, "Butter", 1));
+        ShoppingList list2 = new ShoppingList(2L, "Easter lunch");
+        list2.getShoppingListItems().add(new ShoppingListItem(3L, 2L, ItemCategory.DIARY, "Milk", 5));
+        list2.getShoppingListItems().add(new ShoppingListItem(4L, 2L, ItemCategory.DIARY, "Butter", 1));
         database.put(list2.getId(), list2);
     }
 
-    private Map<Integer, ShoppingList> shoppingLists;
+    private Map<Long, ShoppingList> shoppingLists;
 
     int id;
 
@@ -66,7 +66,7 @@ public class DataAccessObject {
             throw new IllegalStateException("DataAccessObject not opened");
     }
 
-    public ShoppingListItem retrieveShoppingItemById(int id) {
+    public ShoppingListItem retrieveShoppingItemById(long id) {
         assertIsOpen();
         for (ShoppingList list : this.shoppingLists.values()) {
             for (ShoppingListItem item : list.getShoppingListItems()) {
@@ -89,7 +89,7 @@ public class DataAccessObject {
         Console.println("Session #" + id + " closed");
     }
 
-    public void removeShoppingItem(Integer id) {
+    public void removeShoppingItem(Long id) {
         assertIsOpen();
         for (ShoppingList list : this.shoppingLists.values()) {
             for (Iterator<ShoppingListItem> i = list.shoppingListItems.iterator(); i.hasNext();) {
@@ -103,7 +103,7 @@ public class DataAccessObject {
 
     public void createOrUpdate(ShoppingList shoppingList) {
         if (shoppingList.getId() == null) {
-            shoppingList.setId(shoppingLists.size() + 1);
+            shoppingList.setId(shoppingLists.size() + 1L);
         }
         if (shoppingLists.containsKey(shoppingList.getId()))
             shoppingLists.remove(shoppingList);
@@ -117,7 +117,7 @@ public class DataAccessObject {
             return;
 
         if (shoppingItem.getId() == null) {
-            int maxValue = 0;
+            long maxValue = 0;
             for (ShoppingItem each : this.retrieveAllShoppingItems()) {
                 maxValue = Math.max(maxValue, each.getId());
             }

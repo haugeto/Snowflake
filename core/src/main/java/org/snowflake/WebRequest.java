@@ -112,10 +112,7 @@ public class WebRequest implements ArgumentProducer {
         if (Map.class.isAssignableFrom(type))
             return question.getParameters();
 
-        if (type == webPage.getIdType())
-            return question.getId();
-
-        if (type == int.class) {
+        if (webPage.isIdType(type)) {
             Object intValue = question.getId();
             if (intValue == null) {
                 throw new SnowflakeException("Attempt to assign null value to int argument of method \""

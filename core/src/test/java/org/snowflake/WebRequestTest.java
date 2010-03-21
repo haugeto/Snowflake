@@ -16,7 +16,7 @@ public class WebRequestTest {
     @Test
     public void testBuildArguments() throws Exception {
         Question question = new Question();
-        question.setId(42);
+        question.setId(42L);
         Answer answer = new Answer();
 
         WebPage webPage = new WebPage(new TestPage(), "/");
@@ -28,7 +28,7 @@ public class WebRequestTest {
         Object[] someMethodArgs = new ArgumentsBuilder(webRequest).buildArguments(webRequest.webMethod.getMethod());
         assertNotNull(someMethodArgs);
         assertEquals(1, someMethodArgs.length);
-        assertEquals(42, someMethodArgs[0]);
+        assertEquals(42L, someMethodArgs[0]);
 
         WebMethod methodWithMap = new WebMethod(TestPage.class.getMethod("methodWithMap", Answer.class, Map.class));
         methodWithMap.initializeArgs(null);

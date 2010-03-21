@@ -40,7 +40,7 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
         Answer answer = webMethod.createAnswer(webApp.getDefaultViewCss());
         try {
             Question question = webPage.parseRequest(exchange.getRequestBody(), exchange.getRequestMethod(), exchange
-                    .getRequestURI(), webMethod.getUrl());
+                    .getRequestURI());
             OutputStream responseBody = exchange.getResponseBody();
             WebMethod webMethod = chooseOverloadedMethod(question);
             WebRequest webRequest = webApp.createWebRequest(webPage, webMethod, question, answer);

@@ -20,6 +20,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.utils.HttpHelpers;
+import org.snowflake.utils.ReflectionHelpers;
 
 /**
  * <p>
@@ -160,7 +161,7 @@ public class WebPage {
             if (httpArgType == null)
                 continue;
 
-            if (int.class.equals(httpArgType) || Integer.class.equals(httpArgType)) {
+            if (isIdType(httpArgType)) {
                 result.add(webMethod);
             }
         }
@@ -191,36 +192,8 @@ public class WebPage {
         return baseUrl;
     }
 
-    public Integer parseId(String requestUrl, Map<String, String> urlParams, Map<String, String> formData) {
-        List<String> candidates = new ArrayList<String>();
-
-        String urlFragment = StringUtils.substringBefore(requestUrl, "?");
-        String idStr = StringUtils.substringAfterLast(urlFragment, "/");
-        if (idStr.length() > 0)
-            candidates.add(idStr);
-
-        if (formData.containsKey("id"))
-            candidates.add(urlParams.get("id"));
-
-        if (urlParams.containsKey("id"))
-            candidates.add(urlParams.get("id"));
-
-        for (String candidate : candidates)
-            try {
-                return Integer.parseInt(candidate);
-            } catch (NumberFormatException e) {
-            }
-
-        return null;
-    }
-
-    public Class<?> getIdType() {
-        return Integer.class;
-    }
-
-    public Question parseRequest(InputStream requestBody, String httpMethod, URI requestURI, String boundUrl)
-            throws IOException {
-        Question result = new Question();
+    public Question parseRequest(InputStream requestBody, String httpMethod, URI requestURI) throws IOException {
+        Question result = createQuestion(httpMethod, requestURI);
         String incomingUrl = requestURI.getPath();
         result.setUrl(incomingUrl);
 
@@ -243,7 +216,46 @@ public class WebPage {
                 result.setParameters(httpVariables);
             }
         }
-        result.setId(parseId(incomingUrl, urlVariables, httpVariables));
+        resolveId(result, incomingUrl, urlVariables, httpVariables);
         return result;
+    }
+
+    protected void resolveId(Question question, String requestUrl, Map<String, String> urlParams,
+            Map<String, String> formData) {
+        List<String> candidates = new ArrayList<String>();
+
+        String urlFragment = StringUtils.substringBefore(requestUrl, "?");
+        String idStr = StringUtils.substringAfterLast(urlFragment, "/");
+        if (idStr.length() > 0)
+            candidates.add(idStr);
+
+        if (formData.containsKey("id"))
+            candidates.add(urlParams.get("id"));
+
+        if (urlParams.containsKey("id"))
+            candidates.add(urlParams.get("id"));
+
+        for (String candidate : candidates)
+            try {
+                question.setId(Long.parseLong(candidate));
+                return;
+            } catch (NumberFormatException e) {
+            }
+    }
+
+    protected Class<?> getIdType() {
+        return Long.class;
+    }
+
+    protected boolean isIdType(Class<?> type) {
+        if (type.isPrimitive()) {
+            return getIdType() == ReflectionHelpers.wrapperForPrimitive(type);
+        } else {
+            return type == getIdType();
+        }
+    }
+
+    protected Question createQuestion(String httpMethod, URI requestURI) {
+        return new Question();
     }
 }

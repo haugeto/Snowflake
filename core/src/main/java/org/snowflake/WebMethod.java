@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.snowflake.utils.ReflectionHelpers;
 import org.snowflake.views.View;
 
 /**
@@ -31,8 +32,14 @@ public class WebMethod implements Comparable<WebMethod> {
         GET, POST
     };
 
-    public static final Class<?>[] STANDARD_ARG_TYPES = { String.class, Map.class, Byte.class, Short.class,
-            Integer.class, Long.class, Float.class, Double.class, Character.class, Boolean.class };
+    public static final Set<Class<?>> STANDARD_ARG_TYPES = new HashSet<Class<?>>();
+
+    static {
+        STANDARD_ARG_TYPES.add(String.class);
+        STANDARD_ARG_TYPES.add(Map.class);
+        STANDARD_ARG_TYPES.addAll(ReflectionHelpers.PRIMITIVES_TO_WRAPPERS.keySet());
+        STANDARD_ARG_TYPES.addAll(ReflectionHelpers.PRIMITIVES_TO_WRAPPERS.values());
+    }
 
     public static final String DEFAULT_METHOD_NAME = "index";
 

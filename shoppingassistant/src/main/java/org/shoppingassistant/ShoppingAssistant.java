@@ -31,7 +31,7 @@ import org.snowflake.utils.Console;
  */
 public class ShoppingAssistant {
 
-    Map<Integer, ShoppingItem> shoppingItems = new LinkedHashMap<Integer, ShoppingItem>();
+    Map<Long, ShoppingItem> shoppingItems = new LinkedHashMap<Long, ShoppingItem>();
 
     public ShoppingAssistant() {
 
@@ -102,7 +102,7 @@ public class ShoppingAssistant {
 
         if (shoppingItem.getId() == null) {
             // Yes, I know. This is a horrible way of generating an id.
-            shoppingItem.setId(shoppingItems.size() + 1);
+            shoppingItem.setId(shoppingItems.size() + 1L);
         }
         shoppingItems.put(shoppingItem.getId(), shoppingItem);
     }

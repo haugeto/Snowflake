@@ -18,7 +18,7 @@ public class Question {
 
     public static final String DEFAULT_ENCODING = "UTF-8";
 
-    Integer id = null;
+    Long id = null;
 
     String url;
 
@@ -72,11 +72,11 @@ public class Question {
         return parameters.get(key);
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

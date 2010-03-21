@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class ShoppingList {
 
-    Integer id;
+    Long id;
 
     Set<ShoppingListItem> shoppingListItems = new LinkedHashSet<ShoppingListItem>();
 
@@ -15,16 +15,16 @@ public class ShoppingList {
 
     }
 
-    public ShoppingList(Integer id, String description) {
+    public ShoppingList(Long id, String description) {
         this.id = id;
         this.description = description;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

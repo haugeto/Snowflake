@@ -26,9 +26,9 @@ public class ShoppingListItemController {
 
     public Collection<ShoppingListItem> index(Answer answer, Question question, DataAccessObject dataAccessObject) {
         if (question.hasParameter("shoppingListId")) {
-            Integer shoppingListId;
+            Long shoppingListId;
             try {
-                shoppingListId = Integer.parseInt(question.getParameter("shoppingListId"));
+                shoppingListId = Long.parseLong(question.getParameter("shoppingListId"));
             } catch (NumberFormatException e) {
                 throw new ValidationException("shoppingListId", e.getMessage());
             }
@@ -48,11 +48,11 @@ public class ShoppingListItemController {
         return new ShoppingListItem();
     }
 
-    public ShoppingListItem edit(Answer answer, Integer id, DataAccessObject dataAccessObject) {
+    public ShoppingListItem edit(Answer answer, Long id, DataAccessObject dataAccessObject) {
         Console.println("edit received: " + dataAccessObject);
         InputOptions shoppingListChoice = new InputOptions("shoppingListId");
         for (ShoppingList list : dataAccessObject.retrieveAllShoppingLists()) {
-            shoppingListChoice.put(Integer.toString(list.getId()), list.getDescription());
+            shoppingListChoice.put(Long.toString(list.getId()), list.getDescription());
         }
         answer.addInputOptions(shoppingListChoice);
         return dataAccessObject.retrieveShoppingItemById(id);
@@ -72,7 +72,7 @@ public class ShoppingListItemController {
         dataAccessObject.createOrUpdate(shoppingItem);
     }
 
-    public void more(Integer id, DataAccessObject dataAccessObject) {
+    public void more(Long id, DataAccessObject dataAccessObject) {
         Console.println("more received: " + dataAccessObject);
         ShoppingListItem shoppingItem = dataAccessObject.retrieveShoppingItemById(id);
         if (shoppingItem != null) {
@@ -80,7 +80,7 @@ public class ShoppingListItemController {
         }
     }
 
-    public void delete(Question question, Integer id, DataAccessObject dataAccessObject) {
+    public void delete(Question question, Long id, DataAccessObject dataAccessObject) {
         Console.println("delete received: " + dataAccessObject);
         dataAccessObject.removeShoppingItem(id);
     }

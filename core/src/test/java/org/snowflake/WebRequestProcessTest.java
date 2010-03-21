@@ -59,7 +59,7 @@ public class WebRequestProcessTest {
     @Test
     public void testSomeMethod() throws Throwable {
         WebMethod webMethod = webPage.getWebMethodByName("someMethod");
-        question.setId(42);
+        question.setId(42L);
         WebRequest request = new WebRequest(devServer, webPage, webMethod, question, answer);
         request.delegateToController();
         assertTrue(callbackTestPage.someMethodInvoked);
@@ -69,7 +69,7 @@ public class WebRequestProcessTest {
     @Test
     public void testCollectionMethod() throws Throwable {
         WebMethod webMethod = webPage.getWebMethodByName("collectionMethod");
-        question.setId(42);
+        question.setId(42L);
         WebRequest request = new WebRequest(devServer, webPage, webMethod, question, answer);
         request.delegateToController();
         assertTrue(callbackTestPage.collectionMethodInvoked);
@@ -98,9 +98,9 @@ public class WebRequestProcessTest {
         boolean someMethodInvoked;
 
         @Override
-        public Collection<?> collectionMethod(int id) {
+        public Collection<?> collectionMethod(long id) {
             collectionMethodInvoked = true;
-            assertEquals(42, id);
+            assertEquals(42L, id);
             return super.collectionMethod(id);
         }
 
@@ -125,9 +125,9 @@ public class WebRequestProcessTest {
         }
 
         @Override
-        public TestDataObject someMethod(int id) {
+        public TestDataObject someMethod(long id) {
             someMethodInvoked = true;
-            assertEquals(42, id);
+            assertEquals(42L, id);
             return super.someMethod(id);
         }
 

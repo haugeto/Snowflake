@@ -4,7 +4,7 @@ public class ShoppingItem {
 
     ItemCategory category;
 
-    Integer id;
+    Long id;
     
     Integer quantity = 1;
 
@@ -16,7 +16,7 @@ public class ShoppingItem {
 
     }
 
-    public ShoppingItem(Integer id, ItemCategory category, String description, int quantity) {
+    public ShoppingItem(Long id, ItemCategory category, String description, int quantity) {
         this.id = id;
         this.category = category;
         this.description = description;
@@ -47,11 +47,11 @@ public class ShoppingItem {
         this.description = description;
     }
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
