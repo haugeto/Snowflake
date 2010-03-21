@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Collection;
 
@@ -46,7 +47,7 @@ public class ShoppingAssistantTest {
 
     @Test
     public void editReturnsRequestedItem() {
-        assertSame(shoppingItem, shoppingAssistant.edit(1));
+        assertSame(shoppingItem, shoppingAssistant.edit(1L));
     }
 
     @Test
@@ -55,33 +56,33 @@ public class ShoppingAssistantTest {
         fromForm.setId(1L);
         fromForm.setDescription("new description");
         shoppingAssistant.save(new Question(), fromForm);
-        assertNotSame(shoppingItem, shoppingAssistant.shoppingItems.get(1));
-        assertEquals("new description", shoppingAssistant.shoppingItems.get(1).getDescription());
+        assertNotSame(shoppingItem, shoppingAssistant.shoppingItems.get(1L));
+        assertEquals("new description", shoppingAssistant.shoppingItems.get(1L).getDescription());
     }
 
-    @Test(expected = ValidationException.class)
-    public void saveInvalidatesZeroQuantity() {
+    @Test
+    public void saveInvalidatesIllegalValues() {
         ShoppingItem fromForm = new ShoppingItem();
         fromForm.setQuantity(0);
-        shoppingAssistant.save(new Question(), fromForm);
-    }
-
-    @Test(expected = ValidationException.class)
-    public void saveInvalidatesEmptyDescription() {
-        ShoppingItem fromForm = new ShoppingItem();
         fromForm.setDescription("");
-        shoppingAssistant.save(new Question(), fromForm);
+        try {
+            shoppingAssistant.save(new Question(), fromForm);
+            fail("ValidationException expected");
+        } catch (ValidationException e) {
+            assertTrue(e.getValidationMessages().containsKey("quantity"));
+            assertTrue(e.getValidationMessages().containsKey("description"));
+        }
     }
 
     @Test
     public void moreIncreasesQuantity() {
-        shoppingAssistant.more(1);
-        assertEquals(2, (int) shoppingAssistant.shoppingItems.get(1).getQuantity());
+        shoppingAssistant.more(1L);
+        assertEquals(2, (int) shoppingAssistant.shoppingItems.get(1L).getQuantity());
     }
 
     @Test
     public void deleteRemovesItem() {
-        shoppingAssistant.delete(new Question(), 1);
+        shoppingAssistant.delete(new Question(), 1L);
         assertTrue(shoppingAssistant.shoppingItems.isEmpty());
     }
 

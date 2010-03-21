@@ -9,7 +9,6 @@ import org.snowflake.Answer;
 import org.snowflake.Question;
 import org.snowflake.ValidationException;
 import org.snowflake.devserver.DevServer;
-import org.snowflake.utils.Console;
 
 /**
  * A very simple controller showing the core features of Snowflake. All HTML
@@ -67,7 +66,7 @@ public class ShoppingAssistant {
     }
 
     /**
-     * A method with an Integer parameter and a custom return type will be
+     * A method with an Long parameter and a custom return type will be
      * recognized as an operation for showing the contents of an existing object
      * in an HTML form.
      * 
@@ -75,7 +74,7 @@ public class ShoppingAssistant {
      *            The Id of the object to edit. It is retrieved from the URL of
      *            the request, e.g. "42" in this URL: /shopping/edit/42
      */
-    public ShoppingItem edit(Integer id) {
+    public ShoppingItem edit(Long id) {
         return shoppingItems.get(id);
     }
 
@@ -90,8 +89,6 @@ public class ShoppingAssistant {
      *            in the save method.
      */
     public void save(Question question, ShoppingItem shoppingItem) {
-        Console.println(question.toString());
-
         ValidationException validationException = new ValidationException();
         if (shoppingItem.getQuantity() == 0)
             validationException.invalidateField("quantity", "Zero not allowed");
@@ -115,7 +112,7 @@ public class ShoppingAssistant {
      *            The Id is retrieved from the URL of the request, e.g. "42" in
      *            this URL: /shopping/more/42
      */
-    public void more(Integer id) {
+    public void more(Long id) {
         if (shoppingItems.containsKey(id)) {
             ShoppingItem shoppingItem = shoppingItems.get(id);
             shoppingItem.setQuantity(shoppingItem.getQuantity() + 1);
@@ -123,7 +120,7 @@ public class ShoppingAssistant {
     }
 
     /**
-     * The fact that this method (and the "more" method above) has an Integer
+     * The fact that this method (and the "more" method above) has an Long
      * parameter, tells Snowflake that the method performs an operation
      * associated with a particular object, identified by the id argument.
      * Hence, a link to this operation is provided for each object in the table
@@ -135,8 +132,7 @@ public class ShoppingAssistant {
      *            Id of object, who's delete link was clicked, retrieved from
      *            the URL
      */
-    public void delete(Question question, Integer id) {
-        Console.println(question.toString());
+    public void delete(Question question, Long id) {
         shoppingItems.remove(id);
     }
 
