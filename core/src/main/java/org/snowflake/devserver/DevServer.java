@@ -46,7 +46,7 @@ public class DevServer extends WebApp {
      * 
      * @throws Exception
      */
-    public final void run() throws Exception {
+    public final void run() throws SnowflakeException {
         long startupTime = System.currentTimeMillis();
         Console.br();
         Console.center("Snowflake MVC");

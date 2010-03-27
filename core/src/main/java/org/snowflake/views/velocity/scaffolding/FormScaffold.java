@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.Answer;
+import org.snowflake.Question;
 import org.snowflake.utils.Console;
 import org.snowflake.utils.ReflectionHelpers;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
@@ -33,7 +34,7 @@ public class FormScaffold implements Scaffold {
         this.generators.addAll(generators);
     }
 
-    public String generate(Answer answer) throws Exception {
+    public String generate(Question question, Answer answer) throws Exception {
         StringWriter result = new StringWriter();
         PrintWriter writer = new PrintWriter(result);
 

@@ -98,36 +98,36 @@ public class WebRequest implements ArgumentProducer {
 
     @Override
     public Object getArgumentOfType(Class<?> type) {
-        for (Object customArg : this.customArgs) {
-            if (customArg != null && customArg.getClass() == type) {
-                return customArg;
-            }
-        }
         if (type == Question.class)
             return this.question;
 
         if (type == Answer.class)
             return this.answer;
 
-        if (Map.class.isAssignableFrom(type))
-            return question.getParameters();
+        if (WebMethod.isBuiltInType(type)) {
 
-        if (webPage.isIdType(type)) {
-            Object intValue = question.getId();
-            if (intValue == null) {
-                throw new SnowflakeException("Attempt to assign null value to int argument of method \""
-                        + webMethod.getMethod().toGenericString() + "\"");
+            if (Map.class.isAssignableFrom(type))
+                return question.getParameters();
+
+            if (webPage.isIdType(type)) {
+                Object intValue = question.getId();
+                if (intValue == null) {
+                    throw new SnowflakeException("Attempt to assign null value to primitive: Id argument of method \""
+                            + webMethod.getMethod().toGenericString() + "\"");
+                }
+                return intValue;
             }
-            return intValue;
+            throw new SnowflakeException("Unable to create argument of type " + type);
+        }
+        for (Object customArg : this.customArgs) {
+            if (customArg != null && customArg.getClass() == type) {
+                return customArg;
+            }
         }
 
-        if (WebMethod.isCustomArgument(type)) {
-            Object result = createPostDataObject(webMethod.getHttpArgType());
-            validateAndPopulate(question.getParameters(), result);
-            return result;
-        }
-
-        throw new IllegalArgumentException("Unable to create argument of type " + type);
+        Object modelObject = createModelObject(webMethod.getHttpArgType());
+        validateAndPopulate(question.getParameters(), modelObject);
+        return modelObject;
     }
 
     protected void validateAndPopulate(Map<String, String> parameters, Object httpArg) throws ValidationException {
@@ -173,14 +173,14 @@ public class WebRequest implements ArgumentProducer {
      * @param type
      *            Type of object to be created
      */
-    protected <T> T createPostDataObject(Class<T> type) {
-        T postData;
+    protected <T> T createModelObject(Class<T> type) {
+        T model;
         try {
-            postData = type.newInstance();
+            model = type.newInstance();
         } catch (Exception e) {
             throw new SnowflakeException(e);
         }
-        return postData;
+        return model;
     }
 
     public Answer getAnswer() {

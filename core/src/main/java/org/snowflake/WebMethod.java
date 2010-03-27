@@ -32,13 +32,13 @@ public class WebMethod implements Comparable<WebMethod> {
         GET, POST
     };
 
-    public static final Set<Class<?>> STANDARD_ARG_TYPES = new HashSet<Class<?>>();
+    public static final Set<Class<?>> BUILT_IN_TYPES = new HashSet<Class<?>>();
 
     static {
-        STANDARD_ARG_TYPES.add(String.class);
-        STANDARD_ARG_TYPES.add(Map.class);
-        STANDARD_ARG_TYPES.addAll(ReflectionHelpers.PRIMITIVES_TO_WRAPPERS.keySet());
-        STANDARD_ARG_TYPES.addAll(ReflectionHelpers.PRIMITIVES_TO_WRAPPERS.values());
+        BUILT_IN_TYPES.add(String.class);
+        BUILT_IN_TYPES.add(Map.class);
+        BUILT_IN_TYPES.addAll(ReflectionHelpers.PRIMITIVES_TO_WRAPPERS.keySet());
+        BUILT_IN_TYPES.addAll(ReflectionHelpers.PRIMITIVES_TO_WRAPPERS.values());
     }
 
     public static final String DEFAULT_METHOD_NAME = "index";
@@ -94,23 +94,22 @@ public class WebMethod implements Comparable<WebMethod> {
         }
         if (!parameterTypes.isEmpty()) {
             hasHttpArg = true;
-            Class<?> httpArg = parameterTypes.get(0);
-            this.httpArgType = httpArg;
-            if (isCustomArgument(httpArg)) {
+            this.httpArgType = parameterTypes.get(0);
+            if (!isBuiltInType(this.httpArgType)) {
                 this.httpMethod = HttpMethod.POST;
             }
         }
     }
 
-    public static boolean isCustomArgument(Class<?> t) {
+    public static boolean isBuiltInType(Class<?> t) {
         if (t.isPrimitive())
-            return false;
+            return true;
 
-        for (Class<?> argType : STANDARD_ARG_TYPES)
-            if (argType.equals(t))
-                return false;
+        for (Class<?> argType : BUILT_IN_TYPES)
+            if (argType == t)
+                return true;
 
-        return true;
+        return false;
     }
 
     // TODO: Consider making method validate non-static. Tradeoffs?
@@ -125,9 +124,9 @@ public class WebMethod implements Comparable<WebMethod> {
         boolean foundNonSimpleType = false;
         for (int i = 0; i < method.getParameterTypes().length; i++) {
             Class<?> type = method.getParameterTypes()[i];
-            if (!isCustomArgument(type))
+            if (isBuiltInType(type))
                 foundSimpleType = true;
-            if (isCustomArgument(type) && !argumentTypesToIgnore.contains(type))
+            else if (!argumentTypesToIgnore.contains(type))
                 foundNonSimpleType = true;
         }
         if (foundSimpleType && foundNonSimpleType) {

@@ -2,7 +2,6 @@ package org.snowflake.utils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -145,13 +144,6 @@ public class ReflectionHelpers {
 
     public static Object resolveId(Object indexObject) throws SnowflakeException {
         return invokeGetterForVariable("id", indexObject);
-    }
-
-    public static List<String> publicFieldNames(Object target) {
-        if (target == null)
-            return Collections.emptyList();
-
-        return publicFieldNames(target.getClass());
     }
 
     public static List<String> publicFieldNames(Class<?> target) {

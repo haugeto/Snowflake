@@ -2,23 +2,63 @@ package org.snowflake.views.velocity.scaffolding;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.snowflake.Answer;
+import org.snowflake.Question;
 import org.snowflake.ScaffoldHints;
 import org.snowflake.WebAction;
+import org.snowflake.WebApp;
+import org.snowflake.WebMethod;
+import org.snowflake.WebPage;
+import org.snowflake.utils.ReflectionHelpers;
 import org.snowflake.views.scaffolding.Scaffold;
 import org.snowflake.views.scaffolding.ScaffoldingHelper;
 import org.snowflake.views.scaffolding.TableColumn;
 
 public class IndexScaffold implements Scaffold {
 
-    public String generate(Answer answer) throws Exception {
-        String title;
-        String singularName = "entry";
+    final WebApp webApp;
 
+    public IndexScaffold(WebApp webApp) {
+        this.webApp = webApp;
+    }
+
+    public String generate(Question question, Answer answer) throws Exception {
         ScaffoldHints scaffoldHints = answer.getScaffoldHints();
-        title = ScaffoldingHelper.createPluralTitle(answer.getIndexData());
+        initializeUrls(question, scaffoldHints.getPageActions());
+
+        if (answer.hasIndexData()) {
+            Class<?> indexType = answer.getIndexDataType();
+            if (WebMethod.isBuiltInType(indexType)) {
+                answer.setTitle("Result");
+                List<ModelObjectAdapter> adapters = new ArrayList<ModelObjectAdapter>();
+                for (Object rowObject : answer.getIndexData()) {
+                    adapters.add(new ModelObjectAdapter(rowObject));
+                }
+                answer.setIndexData("Values", adapters);
+            }
+            if (scaffoldHints.getColumnNames().isEmpty()) {
+                scaffoldHints.columns(ReflectionHelpers.publicFieldNames(indexType));
+            }
+
+            if (indexType != null)
+                initColumnLinks(indexType, scaffoldHints);
+
+            initializeUrls(question, scaffoldHints.getRowActions());
+        }
+        return buildScaffoldTemplate(answer);
+    }
+    
+    String buildScaffoldTemplate(Answer answer) {
+        ScaffoldHints scaffoldHints = answer.getScaffoldHints();
+        String title = answer.getTitle();
+        if (title == null)
+            title = ScaffoldingHelper.createPluralTitle(answer.getIndexData());
         if (title == null) {
             title = "Empty collection";
         }
@@ -36,6 +76,7 @@ public class IndexScaffold implements Scaffold {
                 writer.println("<th>Actions</th></tr>\n</thead>\n<tbody>");
             }
 
+            String singularName = "entry";
             writer.println("#foreach($" + singularName + " in $" + answer.getIndexDataName() + ")");
             writer.println("\t<tr>");
             for (TableColumn column : scaffoldHints.getTableColumns()) {
@@ -67,5 +108,40 @@ public class IndexScaffold implements Scaffold {
         }
         writer.print("</div></div>");
         return result.toString();
+    }
+
+    void initColumnLinks(Class<?> rowType, ScaffoldHints scaffoldHints) {
+        Map<String, Class<?>> fields = ReflectionHelpers.publicFields(rowType);
+        for (String fieldName : fields.keySet()) {
+            Class<?> fieldType = fields.get(fieldName);
+            if (Set.class.isAssignableFrom(fieldType)) {
+                String collectionTypeName = rowType.getPackage().getName() + "."
+                        + StringUtils.capitalize(fieldName.substring(0, fieldName.length() - 1));
+                Class<?> type;
+                try {
+                    type = Class.forName(collectionTypeName);
+                } catch (ClassNotFoundException e) {
+                    // convention attempt unsuccessful. No link can be
+                    // generated.
+                    return;
+                }
+
+                WebMethod indexMethod = webApp.indexMethodForType(type);
+                if (indexMethod != null) {
+                    TableColumn tableColumn = scaffoldHints.getTableColumnByFieldName(fieldName);
+                    String paramName = StringUtils.uncapitalize(rowType.getSimpleName());
+                    tableColumn.setLink(indexMethod.getUrl() + "?" + paramName + "Id=$!entry.Id");
+                }
+            }
+        }
+    }
+
+    void initializeUrls(Question question, Iterable<WebAction> webActions) {
+        for (WebAction webAction : webActions) {
+            WebPage actionPage = webApp.getWebPageForController(webAction.getController());
+            WebMethod actionMethod = actionPage.getWebMethodByName(webAction.getMethodName());
+            webAction.setDescription(actionMethod.getName());
+            webAction.setUrl(actionMethod.getUrl());
+        }
     }
 }

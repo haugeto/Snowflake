@@ -5,12 +5,11 @@ import static org.junit.Assert.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.util.HashSet;
 
-
 import org.junit.Test;
 import org.snowflake.Answer;
+import org.snowflake.Question;
 import org.snowflake.TestDataObject;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
-import org.snowflake.views.velocity.scaffolding.FormScaffold;
 
 public class FormScaffoldTest {
 
@@ -24,7 +23,7 @@ public class FormScaffoldTest {
         Answer answer = new Answer();
         answer.setData(dataObject);
 
-        String html = formScaffold.generate(answer);
+        String html = formScaffold.generate(new Question(), answer);
         out.flush();
         assertTrue(html.contains("<form"));
         assertTrue(html.contains("method=\"post\""));
@@ -34,7 +33,5 @@ public class FormScaffoldTest {
         assertTrue(html.contains("<input type=\"text\" name=\"dateField\" value=\"$!testDataObject.DateField\""));
         assertTrue(html.contains("<input type=\"submit\""));
     }
-
-   
 
 }
