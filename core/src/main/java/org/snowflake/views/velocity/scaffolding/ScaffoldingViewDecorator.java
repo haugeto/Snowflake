@@ -49,32 +49,29 @@ public class ScaffoldingViewDecorator implements View {
         autoTemplateContent = "## Snowflake generated Apache Velocity Template\n"
                 + "## To continue working on this template, save to\n" + "## <project_source>"
                 + System.getProperty("file.separator")
-                + StringUtils.substringBeforeLast(answer.getTemplateFile(), AUTO_TEMPLATE_FILENAME_SUFFIX) + "\n\n" + autoTemplateContent;
+                + StringUtils.substringBeforeLast(answer.getTemplateFile(), AUTO_TEMPLATE_FILENAME_SUFFIX) + "\n\n"
+                + autoTemplateContent;
 
         exchangeTemplateWithVelocityEngine(autoTemplateName, autoTemplateContent);
         decoratedView.renderView(webMethod, question, answer, out);
     }
 
-    void exchangeTemplateWithVelocityEngine(String autoTemplateName, String autoTemplateContent) {
+    protected void exchangeTemplateWithVelocityEngine(String autoTemplateName, String autoTemplateContent) {
         StringResourceRepository repo = StringResourceLoader.getRepository();
         repo.putStringResource(autoTemplateName, autoTemplateContent);
         webApp.setPreviouslyGeneratedScaffold(deduceTemplateFileName(autoTemplateName), autoTemplateContent);
     }
 
     protected Scaffold createScaffold(WebMethod webMethod) {
-        Scaffold scaffold;
         switch (webMethod.getType()) {
         case UPDATE_FORM:
         case CREATE_FORM:
-            scaffold = new FormScaffold(webMethod.getReturnType(), webApp.getFormFieldTemplateGenerators());
-            break;
+            return new FormScaffold(webMethod.getReturnType(), webApp.getFormFieldTemplateGenerators());
         case SUBMIT:
         case INDEX:
         default:
-            scaffold = new IndexScaffold(webApp);
-            break;
+            return new IndexScaffold(webApp);
         }
-        return scaffold;
     }
 
     static String deduceTemplateFileName(String autoTemplateName) {
