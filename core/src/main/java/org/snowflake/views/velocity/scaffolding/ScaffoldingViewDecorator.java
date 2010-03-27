@@ -39,27 +39,25 @@ public class ScaffoldingViewDecorator implements View {
 
     @Override
     public void renderView(WebMethod webMethod, Question question, Answer answer, OutputStream out) throws Exception {
-        String autoTemplateName = answer.getTemplateFile() + AUTO_TEMPLATE_FILENAME_SUFFIX;
-        String autoTemplateContent = null;
-        answer.setTemplateFile(autoTemplateName);
-
         Scaffold scaffold = createScaffold(webMethod);
-        autoTemplateContent = scaffold.generate(question, answer);
-
-        autoTemplateContent = "## Snowflake generated Apache Velocity Template\n"
+        String scaffoldContent = scaffold.generate(question, answer);
+        scaffoldContent = "## Snowflake generated Apache Velocity Template\n"
                 + "## To continue working on this template, save to\n" + "## <project_source>"
                 + System.getProperty("file.separator")
                 + StringUtils.substringBeforeLast(answer.getTemplateFile(), AUTO_TEMPLATE_FILENAME_SUFFIX) + "\n\n"
-                + autoTemplateContent;
+                + scaffoldContent;
 
-        exchangeTemplateWithVelocityEngine(autoTemplateName, autoTemplateContent);
+        String scaffoldName = answer.getTemplateFile() + AUTO_TEMPLATE_FILENAME_SUFFIX;
+        answer.setTemplateFile(scaffoldName);
+
+        exchangeTemplateWithVelocityEngine(scaffoldName, scaffoldContent);
         decoratedView.renderView(webMethod, question, answer, out);
     }
 
-    protected void exchangeTemplateWithVelocityEngine(String autoTemplateName, String autoTemplateContent) {
+    protected void exchangeTemplateWithVelocityEngine(String name, String template) {
         StringResourceRepository repo = StringResourceLoader.getRepository();
-        repo.putStringResource(autoTemplateName, autoTemplateContent);
-        webApp.setPreviouslyGeneratedScaffold(deduceTemplateFileName(autoTemplateName), autoTemplateContent);
+        repo.putStringResource(name, template);
+        webApp.setPreviouslyGeneratedScaffold(deduceTemplateFileName(name), template);
     }
 
     protected Scaffold createScaffold(WebMethod webMethod) {
