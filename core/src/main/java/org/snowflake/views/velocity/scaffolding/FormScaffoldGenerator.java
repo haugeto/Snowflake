@@ -30,16 +30,11 @@ public class FormScaffoldGenerator implements ScaffoldGenerator {
     }
 
     public String generate(Question question, Answer answer) throws Exception {
-
         HtmlWriter writer = new HtmlWriter(3);
-
         String title = "Edit " + ScaffoldingHelper.createSingularTitle(dataObjectType);
-        writer.tags("<div id=\"hd\">", "<h1>" + title + "</h1>", "</div>");
-        writer.startTag("<div id=\"bd\">");
-        writer.startTag("<div class=\"yui-g\">");
-        writer.startTag("<form method=\"post\" action=\"$postBackUrl\">");
-        writer.startTag("<fieldset>");
-
+        writer.startEndTags("<div id=\"hd\">", "<h1>" + title + "</h1>", "</div>");
+        writer.startTags("<div id=\"bd\">", "<div class=\"yui-g\">");
+        writer.startTags("<form method=\"post\" action=\"$postBackUrl\">", "<fieldset>");
         String dataObjectName = StringUtils.uncapitalize(dataObjectType.getSimpleName());
         Map<String, Class<?>> publicFields = ReflectionHelpers.publicFields(dataObjectType);
         for (String fieldName : publicFields.keySet()) {
@@ -61,12 +56,8 @@ public class FormScaffoldGenerator implements ScaffoldGenerator {
             writer.println("<span class=\"validationerror\">$!validationErrors." + fieldName + "</span>");
             writer.endTag("</p>");
         }
-
-        writer.tags("<p>", "<label for=\"submit\">&nbsp;</label>", "<input type=\"submit\" />", "</p>");
-        writer.endTag("</fieldset>");
-        writer.endTag("</form>");
-        writer.endTag("</div>");
-        writer.endTag("</div>");
+        writer.startEndTags("<p>", "<label for=\"submit\">&nbsp;</label>", "<input type=\"submit\" />", "</p>");
+        writer.endTags("</fieldset>", "</form>", "</div>", "</div>");
         return writer.toString();
     }
 

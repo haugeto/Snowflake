@@ -62,7 +62,7 @@ public class IndexScaffoldGenerator implements ScaffoldGenerator {
             title = "Empty collection";
         }
         HtmlWriter writer = new HtmlWriter(3);
-        writer.tags("<div id=\"hd\">", "<h1>" + title + "</h1>", "</div>");
+        writer.startEndTags("<div id=\"hd\">", "<h1>" + title + "</h1>", "</div>");
         writer.startTag("<div id=\"bd\">");
         writer.startTag("<div class=\"yui-g\">");
         if (answer.hasIndexData()) {

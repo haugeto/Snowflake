@@ -16,13 +16,23 @@ public class HtmlWriter extends SourceCodeWriter {
         super.println(s);
         indent();
     }
+    
+    public void startTags(String... tags) {
+        for (String s : tags)
+            startTag(s);
+    }
 
     public void endTag(String s) {
         unindent();
         super.println(s);
     }
 
-    public void tags(String... tags) {
+    public void endTags(String... tags) {
+        for (String s : tags)
+            endTag(s);
+    }
+
+    public void startEndTags(String... tags) {
         if (tags.length >= 1)
             startTag(tags[0]);
 
