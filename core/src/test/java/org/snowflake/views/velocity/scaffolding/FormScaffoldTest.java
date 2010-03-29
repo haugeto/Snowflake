@@ -32,6 +32,7 @@ public class FormScaffoldTest {
         assertTrue(html.contains("<form"));
         assertTrue(html.contains("method=\"post\""));
         assertTrue(html.contains("action=\"$postBackUrl\""));
+        assertTrue(html.contains("<input type=\"text\" name=\"id\" value=\"$!testDataObject.Id\""));
         assertTrue(html.contains("<input type=\"text\" name=\"strField\" value=\"$!testDataObject.StrField\""));
         assertTrue(html.contains("<input type=\"text\" name=\"intField\" value=\"$!testDataObject.IntField\""));
         assertTrue(html.contains("<input type=\"text\" name=\"dateField\" value=\"$!testDataObject.DateField\""));
