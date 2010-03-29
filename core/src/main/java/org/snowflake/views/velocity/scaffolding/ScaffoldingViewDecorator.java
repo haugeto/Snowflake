@@ -46,6 +46,7 @@ public class ScaffoldingViewDecorator implements View {
                 + System.getProperty("file.separator")
                 + StringUtils.substringBeforeLast(answer.getTemplateFile(), AUTO_TEMPLATE_FILENAME_SUFFIX) + "\n\n"
                 + scaffoldContent;
+        answer.putTemplateVariable("view_scaffold", scaffoldContent);
 
         String scaffoldName = answer.getTemplateFile() + AUTO_TEMPLATE_FILENAME_SUFFIX;
         answer.setTemplateFile(scaffoldName);
@@ -57,7 +58,6 @@ public class ScaffoldingViewDecorator implements View {
     protected void exchangeTemplateWithVelocityEngine(String name, String template) {
         StringResourceRepository repo = StringResourceLoader.getRepository();
         repo.putStringResource(name, template);
-        webApp.setPreviouslyGeneratedScaffold(deduceTemplateFileName(name), template);
     }
 
     protected ScaffoldGenerator createScaffold(WebMethod webMethod) {

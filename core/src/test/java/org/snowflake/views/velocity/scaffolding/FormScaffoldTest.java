@@ -3,7 +3,9 @@ package org.snowflake.views.velocity.scaffolding;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 import org.snowflake.Answer;
@@ -19,7 +21,9 @@ public class FormScaffoldTest {
 
         TestDataObject dataObject = new TestDataObject();
         dataObject.setIntField(42);
-        FormScaffoldGenerator generator = new FormScaffoldGenerator(TestDataObject.class, new HashSet<FormFieldTemplateGenerator>());
+        Set<FormFieldTemplateGenerator> generators = new HashSet<FormFieldTemplateGenerator>();
+        generators.addAll(Arrays.asList(FormScaffoldGenerator.DEFAULT_GENERATORS));
+        FormScaffoldGenerator generator = new FormScaffoldGenerator(TestDataObject.class, generators);
         Answer answer = new Answer();
         answer.setData(dataObject);
 

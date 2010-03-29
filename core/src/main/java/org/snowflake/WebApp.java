@@ -211,6 +211,4 @@ public abstract class WebApp {
         return null;
     }
 
-    public abstract void setPreviouslyGeneratedScaffold(String deduceTemplateFileName, String autoTemplateContent);
-
 }

@@ -35,9 +35,6 @@ public class Console {
             temp += HR_ELEMENT;
         }
         HR = temp;
-
-        ConsoleListener inputListener = new ConsoleListener();
-        new Thread(inputListener).start();
     }
 
     public static synchronized void hr() {
