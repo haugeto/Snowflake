@@ -2,9 +2,6 @@ package org.snowflake.views.velocity.scaffolding;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,24 +11,23 @@ import org.snowflake.Question;
 import org.snowflake.utils.Console;
 import org.snowflake.utils.ReflectionHelpers;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
-import org.snowflake.views.scaffolding.Scaffold;
+import org.snowflake.views.scaffolding.ScaffoldGenerator;
 import org.snowflake.views.scaffolding.ScaffoldingHelper;
 
-public class FormScaffold implements Scaffold {
+public class FormScaffoldGenerator implements ScaffoldGenerator {
 
-    final static FormFieldTemplateGenerator[] DEFAULT_GENERATORS = { new TextInputGenerator(),
+    public final static FormFieldTemplateGenerator[] DEFAULT_GENERATORS = { new TextInputGenerator(),
             new SelectInputGenerator(), new CheckboxInputGenerator() };
 
-    List<FormFieldTemplateGenerator> generators = new ArrayList<FormFieldTemplateGenerator>(Arrays
-            .asList(DEFAULT_GENERATORS));
-
+    final Set<FormFieldTemplateGenerator> generators;
+    
     Class<?> dataObjectType;
 
-    public FormScaffold(Class<?> dataObjectType, Set<FormFieldTemplateGenerator> generators) {
+    public FormScaffoldGenerator(Class<?> dataObjectType, Set<FormFieldTemplateGenerator> generators) {
         if (dataObjectType == null)
             throw new IllegalArgumentException("Cannot auto generate form without knowing the backing data object type");
         this.dataObjectType = dataObjectType;
-        this.generators.addAll(generators);
+        this.generators = generators;
     }
 
     public String generate(Question question, Answer answer) throws Exception {

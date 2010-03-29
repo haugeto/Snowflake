@@ -10,7 +10,7 @@ import org.snowflake.Question;
 import org.snowflake.WebApp;
 import org.snowflake.WebMethod;
 import org.snowflake.views.View;
-import org.snowflake.views.scaffolding.Scaffold;
+import org.snowflake.views.scaffolding.ScaffoldGenerator;
 
 /**
  * <p>
@@ -39,8 +39,8 @@ public class ScaffoldingViewDecorator implements View {
 
     @Override
     public void renderView(WebMethod webMethod, Question question, Answer answer, OutputStream out) throws Exception {
-        Scaffold scaffold = createScaffold(webMethod);
-        String scaffoldContent = scaffold.generate(question, answer);
+        ScaffoldGenerator scaffoldGenerator = createScaffold(webMethod);
+        String scaffoldContent = scaffoldGenerator.generate(question, answer);
         scaffoldContent = "## Snowflake generated Apache Velocity Template\n"
                 + "## To continue working on this template, save to\n" + "## <project_source>"
                 + System.getProperty("file.separator")
@@ -60,15 +60,15 @@ public class ScaffoldingViewDecorator implements View {
         webApp.setPreviouslyGeneratedScaffold(deduceTemplateFileName(name), template);
     }
 
-    protected Scaffold createScaffold(WebMethod webMethod) {
+    protected ScaffoldGenerator createScaffold(WebMethod webMethod) {
         switch (webMethod.getType()) {
         case UPDATE_FORM:
         case CREATE_FORM:
-            return new FormScaffold(webMethod.getReturnType(), webApp.getFormFieldTemplateGenerators());
+            return new FormScaffoldGenerator(webMethod.getReturnType(), webApp.getFormFieldTemplateGenerators());
         case SUBMIT:
         case INDEX:
         default:
-            return new IndexScaffold(webApp);
+            return new IndexScaffoldGenerator(webApp);
         }
     }
 

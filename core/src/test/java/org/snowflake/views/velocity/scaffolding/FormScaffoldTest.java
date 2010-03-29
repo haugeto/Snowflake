@@ -19,11 +19,11 @@ public class FormScaffoldTest {
 
         TestDataObject dataObject = new TestDataObject();
         dataObject.setIntField(42);
-        FormScaffold formScaffold = new FormScaffold(TestDataObject.class, new HashSet<FormFieldTemplateGenerator>());
+        FormScaffoldGenerator generator = new FormScaffoldGenerator(TestDataObject.class, new HashSet<FormFieldTemplateGenerator>());
         Answer answer = new Answer();
         answer.setData(dataObject);
 
-        String html = formScaffold.generate(new Question(), answer);
+        String html = generator.generate(new Question(), answer);
         out.flush();
         assertTrue(html.contains("<form"));
         assertTrue(html.contains("method=\"post\""));

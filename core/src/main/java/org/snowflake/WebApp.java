@@ -2,6 +2,7 @@ package org.snowflake;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -13,6 +14,7 @@ import org.snowflake.fieldconverters.FieldConverter;
 import org.snowflake.views.ViewFactory;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
 import org.snowflake.views.velocity.VelocityViewFactory;
+import org.snowflake.views.velocity.scaffolding.FormScaffoldGenerator;
 
 /**
  * A WebApp has a number of pages which in turn have methods, bound to URLs.
@@ -39,9 +41,9 @@ public abstract class WebApp {
 
     protected final Set<FormFieldTemplateGenerator> formFieldTemplateGenerators = new LinkedHashSet<FormFieldTemplateGenerator>();
 
-    protected final List<FieldConverter> fieldConverters = new ArrayList<FieldConverter>();
+    protected final Set<FieldConverter> fieldConverters = new LinkedHashSet<FieldConverter>();
 
-    protected final List<RequestInterceptor<?>> requestInterceptors = new ArrayList<RequestInterceptor<?>>();
+    protected final Set<RequestInterceptor<?>> requestInterceptors = new LinkedHashSet<RequestInterceptor<?>>();
 
     protected ViewFactory viewFactory = new VelocityViewFactory(this);
 
@@ -54,8 +56,13 @@ public abstract class WebApp {
     }
 
     public WebApp(String name) {
+        this(name, Arrays.asList(FormScaffoldGenerator.DEFAULT_GENERATORS));
+    }
+
+    public WebApp(String name, Collection<FormFieldTemplateGenerator> formFieldTemplateGenerators) {
         this.name = name;
         this.fieldConverters.addAll(Arrays.asList(FieldConverter.DEFAULT_CONVERTERS));
+        this.formFieldTemplateGenerators.addAll(formFieldTemplateGenerators);
     }
 
     /**
@@ -123,10 +130,6 @@ public abstract class WebApp {
 
     public void addFieldConverter(FieldConverter fieldConverter) {
         this.fieldConverters.add(fieldConverter);
-    }
-
-    public List<FieldConverter> getFieldConverters() {
-        return fieldConverters;
     }
 
     protected FieldConverter findConverterForType(Class<?> type) {

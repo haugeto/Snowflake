@@ -16,15 +16,15 @@ import org.snowflake.WebApp;
 import org.snowflake.WebMethod;
 import org.snowflake.WebPage;
 import org.snowflake.utils.ReflectionHelpers;
-import org.snowflake.views.scaffolding.Scaffold;
+import org.snowflake.views.scaffolding.ScaffoldGenerator;
 import org.snowflake.views.scaffolding.ScaffoldingHelper;
 import org.snowflake.views.scaffolding.TableColumn;
 
-public class IndexScaffold implements Scaffold {
+public class IndexScaffoldGenerator implements ScaffoldGenerator {
 
     final WebApp webApp;
 
-    public IndexScaffold(WebApp webApp) {
+    public IndexScaffoldGenerator(WebApp webApp) {
         this.webApp = webApp;
     }
 
