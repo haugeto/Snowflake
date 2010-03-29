@@ -10,7 +10,7 @@ Snowflake uses an internal web server, based on the simple, built in HTTP server
 
 We're inspired by Ruby on Rails and Python Django. We've tried to avoid being influenced by MVC frameworks like Struts, Spring MVC and Wicket. Not because we don't like them, but rather because we'd like to see what happens if we move in another direction.
 
-To get started using Snowflake, take a look at the example application called "shoppingassistant". When running the application, make sure to choose "view source" in your browser.
+To get started using Snowflake, take a look at the example application called "shoppingassistant". When running the application, make sure to take a look at the HTML source in your browser.
 
 You will need Maven to build Snowflake and download dependencies. Snowflake uses Java 6.
 
