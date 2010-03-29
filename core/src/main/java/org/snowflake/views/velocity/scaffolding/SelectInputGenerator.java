@@ -3,22 +3,20 @@
  */
 package org.snowflake.views.velocity.scaffolding;
 
-
 import org.apache.commons.lang.StringUtils;
+import org.snowflake.utils.HtmlWriter;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
 
 public class SelectInputGenerator implements FormFieldTemplateGenerator {
 
     @Override
-    public String generate(String fieldName, String dataObjectName, Class<?> dataObjectType) {
-        String result = "";
+    public void generate(HtmlWriter writer, String fieldName, String dataObjectName, Class<?> dataObjectType) {
         // FIXME: Duplicates logic in VelocityView
         String choicesVariableName = "$" + fieldName + "Choices";
-        result += "<select name=\"" + fieldName + "\">\n";
-        result += "#options($" + dataObjectName + "." + StringUtils.capitalize(fieldName) + " " + choicesVariableName
-                + ")\n";
-        result += "</select>";
-        return result;
+        writer.startTag("<select name=\"" + fieldName + "\">");
+        writer.println("#options($" + dataObjectName + "." + StringUtils.capitalize(fieldName) + " "
+                + choicesVariableName + ")", false);
+        writer.endTag("</select>");
     }
 
     @Override

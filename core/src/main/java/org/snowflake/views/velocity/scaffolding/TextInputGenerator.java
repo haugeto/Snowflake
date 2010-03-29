@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.snowflake.utils.HtmlWriter;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
 
 public class TextInputGenerator implements FormFieldTemplateGenerator {
@@ -17,9 +18,9 @@ public class TextInputGenerator implements FormFieldTemplateGenerator {
     List<Class<?>> acceptedTypes = Arrays.asList(ACCEPTED_TYPES);
 
     @Override
-    public String generate(String fieldName, String dataObjectName, Class<?> dataObjectType) {
-        return "<input type=\"text\" name=\"" + fieldName + "\" value=\"$!" + dataObjectName + "."
-                + StringUtils.capitalize(fieldName) + "\" />";
+    public void generate(HtmlWriter writer, String fieldName, String dataObjectName, Class<?> dataObjectType) {
+        writer.println("<input type=\"text\" name=\"" + fieldName + "\" value=\"$!" + dataObjectName + "."
+                + StringUtils.capitalize(fieldName) + "\"/>");
     }
 
     @Override

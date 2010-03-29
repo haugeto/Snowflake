@@ -1,18 +1,19 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
- "http://www.w3.org/TR/html4/strict.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <!--
 $!view_scaffold
 -->
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 	<head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
 		<title>$view_title</title>
-		<link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css" />
-		<link rel="stylesheet" type="text/css" href="$view_css" />
+		<link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css"/>
+		<link rel="stylesheet" type="text/css" href="$view_css"/>
 	</head>
 	<body>
 		<div id="doc" class="yui-t7">
 			$view_content
-			<div id="ft" role="complementary">
+			<div id="ft">
 				<p>Powered by Snowflake MVC</p>
 			</div>
 		</div>

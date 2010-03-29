@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+## Snowflake generated Apache Velocity Template
+## To continue working on this template, save to
+## <project_source>/org/shoppingassistant/shoppingassistant.index.vm
+
+            <div id="hd">
+                <h1>Welcome!</h1>
+            </div>
+            <div id="bd">
+                <div class="yui-g">
+                    <table cellpadding="4" border="1">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>NiceToHave</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+#foreach($entry in $shoppingItems)
+                            <tr>
+                                <td>$!entry.Category</td>
+                                <td>$!entry.Description</td>
+                                <td>$!entry.Quantity</td>
+                                <td>$!entry.NiceToHave</td>
+                                <td><a href="/shopping/delete/$!entry.Id">delete</a> <a href="/shopping/edit/$!entry.Id">edit</a> <a href="/shopping/more/$!entry.Id">more</a> </td>
+                            </tr>
+#end
+                        </tbody>
+                    </table>
+                    <p>
+                        <a href="/shopping/add">add</a>
+                    </p>
+                </div>
+            </div>
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <title>Welcome!</title>
+        <link rel="stylesheet" href="http://yui.yahooapis.com/2.7.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css"/>
+        <link rel="stylesheet" type="text/css" href="/static/org/snowflake/snowflake.css"/>
+    </head>
+
+    <body>
+        <div id="doc" class="yui-t7">
+            
+            <div id="hd">
+                <h1>Welcome!</h1>
+            </div>
+            <div id="bd">
+                <div class="yui-g">
+                    <table cellpadding="4" border="1">
+
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>NiceToHave</th>
+                                <th>Actions</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>VEGETABLES</td>
+                                <td>Carrots</td>
+                                <td>15</td>
+
+                                <td>false</td>
+                                <td><a href="/shopping/delete/1">delete</a> <a href="/shopping/edit/1">edit</a> <a href="/shopping/more/1">more</a> </td>
+                            </tr>
+                            <tr>
+                                <td>VEGETABLES</td>
+
+                                <td>Tenderloin</td>
+                                <td>17</td>
+                                <td>true</td>
+                                <td><a href="/shopping/delete/3">delete</a> <a href="/shopping/edit/3">edit</a> <a href="/shopping/more/3">more</a> </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>
+                        <a href="/shopping/add">add</a>
+                    </p>
+                </div>
+            </div>
+
+            <div id="ft">
+                <p>Powered by Snowflake MVC</p>
+            </div>
+        </div>
+    </body>
+</html>

@@ -57,7 +57,7 @@ public class IndexScaffoldTest {
         assertTrue(html.contains("<td><a href=\"/rooms/edit?houseId=$!entry.Id\">Rooms</a></td>"));
         assertTrue(html.contains("<td><a href=\"/edit/$!entry.Id\">Edit</a> </td>"));
         assertTrue(html.contains("#end"));
-        assertTrue(html.contains("<p><a href=\"/add\">Add</a></p>"));
+        assertTrue(html.contains("<a href=\"/add\">Add</a>"));
     }
 
     /**

@@ -1,7 +1,5 @@
 package org.snowflake.views.velocity.scaffolding;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +13,7 @@ import org.snowflake.WebAction;
 import org.snowflake.WebApp;
 import org.snowflake.WebMethod;
 import org.snowflake.WebPage;
+import org.snowflake.utils.HtmlWriter;
 import org.snowflake.utils.ReflectionHelpers;
 import org.snowflake.views.scaffolding.ScaffoldGenerator;
 import org.snowflake.views.scaffolding.ScaffoldingHelper;
@@ -53,7 +52,7 @@ public class IndexScaffoldGenerator implements ScaffoldGenerator {
         }
         return buildScaffoldTemplate(answer);
     }
-    
+
     String buildScaffoldTemplate(Answer answer) {
         ScaffoldHints scaffoldHints = answer.getScaffoldHints();
         String title = answer.getTitle();
@@ -62,52 +61,62 @@ public class IndexScaffoldGenerator implements ScaffoldGenerator {
         if (title == null) {
             title = "Empty collection";
         }
-        StringWriter result = new StringWriter();
-        PrintWriter writer = new PrintWriter(result);
-        writer.println("<div id=\"hd\" role=\"navigation\"><h1>" + title + "</h1></div>");
-        writer.println("<div id=\"bd\" role=\"main\"><div class=\"yui-g\">");
+        HtmlWriter writer = new HtmlWriter(3);
+        writer.tags("<div id=\"hd\">", "<h1>" + title + "</h1>", "</div>");
+        writer.startTag("<div id=\"bd\">");
+        writer.startTag("<div class=\"yui-g\">");
         if (answer.hasIndexData()) {
-            writer.println("<table cellpadding=\"4\" border=\"1\">");
-            writer.println("<thead>\n<tr>");
+            writer.startTag("<table cellpadding=\"4\" border=\"1\">");
+            writer.startTag("<thead>");
+            writer.startTag("<tr>");
             for (TableColumn columnTitle : scaffoldHints.getTableColumns()) {
                 writer.println("<th>" + columnTitle.getTitle() + "</th>");
             }
             if (!scaffoldHints.getRowActions().isEmpty()) {
-                writer.println("<th>Actions</th></tr>\n</thead>\n<tbody>");
+                writer.println("<th>Actions</th>");
             }
+            writer.endTag("</tr>");
+            writer.endTag("</thead>");
+            writer.startTag("<tbody>");
 
             String singularName = "entry";
-            writer.println("#foreach($" + singularName + " in $" + answer.getIndexDataName() + ")");
-            writer.println("\t<tr>");
+            writer.println("#foreach($" + singularName + " in $" + answer.getIndexDataName() + ")", false);
+            writer.startTag("<tr>");
             for (TableColumn column : scaffoldHints.getTableColumns()) {
-                writer.print("\t\t<td>");
+                String cellContents = "<td>";
                 if (column.hasLink()) {
-                    writer.print("<a href=\"" + column.getLink() + "\">"
-                            + StringUtils.capitalize(column.getFieldName()) + "</a>");
+                    cellContents += "<a href=\"" + column.getLink() + "\">"
+                            + StringUtils.capitalize(column.getFieldName()) + "</a>";
                 } else {
-                    writer.print("$!" + singularName + "." + StringUtils.capitalize(column.getFieldName()));
+                    cellContents += "$!" + singularName + "." + StringUtils.capitalize(column.getFieldName());
                 }
-                writer.println("</td>");
+                cellContents += "</td>";
+                writer.println(cellContents);
             }
             if (!scaffoldHints.getRowActions().isEmpty()) {
-                writer.print("\t\t<td>");
+                String cellContents = "<td>";
                 for (WebAction action : scaffoldHints.getRowActions()) {
                     // TODO: Infer the ID field more dynamically
-                    writer.print("<a href=\"" + action.getUrl() + "/$!" + singularName + ".Id\">"
-                            + action.getDescription() + "</a> ");
+                    cellContents += "<a href=\"" + action.getUrl() + "/$!" + singularName + ".Id\">"
+                            + action.getDescription() + "</a> ";
                 }
-                writer.println("</td>");
+                cellContents += "</td>";
+                writer.println(cellContents);
             }
-            writer.println("\t</tr>");
-            writer.println("#end");
-
-            writer.print("</tbody>\n</table>");
+            writer.endTag("</tr>");
+            writer.println("#end", false);
+            writer.endTag("</tbody>");
+            writer.endTag("</table>");
         }
         for (WebAction pageAction : scaffoldHints.getPageActions()) {
-            writer.println("<p><a href=\"" + pageAction.getUrl() + "\">" + pageAction.getDescription() + "</a></p>");
+            writer.startTag("<p>");
+            writer.println("<a href=\"" + pageAction.getUrl() + "\">" + pageAction.getDescription() + "</a>");
+            writer.endTag("</p>");
         }
-        writer.print("</div></div>");
-        return result.toString();
+        writer.endTag("</div>");
+
+        writer.endTag("</div>");
+        return writer.toString();
     }
 
     void initColumnLinks(Class<?> rowType, ScaffoldHints scaffoldHints) {

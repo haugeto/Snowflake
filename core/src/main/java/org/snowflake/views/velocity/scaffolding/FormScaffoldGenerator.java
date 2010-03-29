@@ -1,7 +1,5 @@
 package org.snowflake.views.velocity.scaffolding;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Map;
 import java.util.Set;
 
@@ -9,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.snowflake.Answer;
 import org.snowflake.Question;
 import org.snowflake.utils.Console;
+import org.snowflake.utils.HtmlWriter;
 import org.snowflake.utils.ReflectionHelpers;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
 import org.snowflake.views.scaffolding.ScaffoldGenerator;
@@ -20,7 +19,7 @@ public class FormScaffoldGenerator implements ScaffoldGenerator {
             new SelectInputGenerator(), new CheckboxInputGenerator() };
 
     final Set<FormFieldTemplateGenerator> generators;
-    
+
     Class<?> dataObjectType;
 
     public FormScaffoldGenerator(Class<?> dataObjectType, Set<FormFieldTemplateGenerator> generators) {
@@ -31,14 +30,15 @@ public class FormScaffoldGenerator implements ScaffoldGenerator {
     }
 
     public String generate(Question question, Answer answer) throws Exception {
-        StringWriter result = new StringWriter();
-        PrintWriter writer = new PrintWriter(result);
+
+        HtmlWriter writer = new HtmlWriter(3);
 
         String title = "Edit " + ScaffoldingHelper.createSingularTitle(dataObjectType);
-        writer.println("<div id=\"hd\" role=\"navigation\">\n<h1>" + title + "</h1>\n</div>");
-        writer.println("<div id=\"bd\" role=\"main\">\n<div class=\"yui-g\">");
-        writer.println("<form method=\"post\" action=\"$postBackUrl\">");
-        writer.println("<fieldset>");
+        writer.tags("<div id=\"hd\">", "<h1>" + title + "</h1>", "</div>");
+        writer.startTag("<div id=\"bd\">");
+        writer.startTag("<div class=\"yui-g\">");
+        writer.startTag("<form method=\"post\" action=\"$postBackUrl\">");
+        writer.startTag("<fieldset>");
 
         String dataObjectName = StringUtils.uncapitalize(dataObjectType.getSimpleName());
         Map<String, Class<?>> publicFields = ReflectionHelpers.publicFields(dataObjectType);
@@ -55,16 +55,19 @@ public class FormScaffoldGenerator implements ScaffoldGenerator {
                         + dataObjectType + ")");
                 continue;
             }
-            writer.println("<p><label for=\"" + fieldName + "\">" + fieldName + "</label>"
-                    + generator.generate(fieldName, dataObjectName, fieldType)
-                    + "<span class=\"validationerror\">$!validationErrors." + fieldName + "</span></p>");
+            writer.startTag("<p>");
+            writer.println("<label for=\"" + fieldName + "\">" + fieldName + "</label>");
+            generator.generate(writer, fieldName, dataObjectName, fieldType);
+            writer.println("<span class=\"validationerror\">$!validationErrors." + fieldName + "</span>");
+            writer.endTag("</p>");
         }
 
-        writer.println("\t<p><label for=\"submit\">&nbsp;</label><input type=\"submit\" /></p>");
-        writer.println("</fieldset>");
-        writer.println("</form>");
-        writer.print("</div>\n</div>");
-        return result.toString();
+        writer.tags("<p>", "<label for=\"submit\">&nbsp;</label>", "<input type=\"submit\" />", "</p>");
+        writer.endTag("</fieldset>");
+        writer.endTag("</form>");
+        writer.endTag("</div>");
+        writer.endTag("</div>");
+        return writer.toString();
     }
 
     private FormFieldTemplateGenerator resolveGenerator(Class<?> fieldType) {

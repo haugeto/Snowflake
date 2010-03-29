@@ -1,6 +1,7 @@
 package org.snowflake.views.velocity.scaffolding;
 
 import org.apache.commons.lang.StringUtils;
+import org.snowflake.utils.HtmlWriter;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
 
 public class CheckboxInputGenerator implements FormFieldTemplateGenerator {
@@ -11,7 +12,8 @@ public class CheckboxInputGenerator implements FormFieldTemplateGenerator {
     }
 
     @Override
-    public String generate(String fieldName, String dataObjectName, Class<?> dataObjectType) {
-        return "#checkbox('" + fieldName + "', $" + dataObjectName + "." + StringUtils.capitalize(fieldName) + ")";
+    public void generate(HtmlWriter writer, String fieldName, String dataObjectName, Class<?> dataObjectType) {
+        writer.println("#checkbox('" + fieldName + "', $" + dataObjectName + "." + StringUtils.capitalize(fieldName)
+                + ")", false);
     }
 }
