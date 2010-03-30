@@ -31,8 +31,8 @@ public class IndexScaffoldGenerator implements ScaffoldGenerator {
         ScaffoldHints scaffoldHints = answer.getScaffoldHints();
         initializeUrls(question, scaffoldHints.getPageActions());
 
-        if (answer.hasIndexData()) {
-            Class<?> indexType = answer.getIndexDataType();
+        Class<?> indexType = answer.getIndexDataType();
+        if (indexType != null) {
             if (WebMethod.isBuiltInType(indexType)) {
                 answer.setTitle("Result");
                 List<ModelObjectAdapter> adapters = new ArrayList<ModelObjectAdapter>();
@@ -41,29 +41,27 @@ public class IndexScaffoldGenerator implements ScaffoldGenerator {
                 }
                 answer.setIndexData("Values", adapters);
             }
-            if (scaffoldHints.getColumnNames().isEmpty()) {
+            if (scaffoldHints.getColumnNames().isEmpty())
                 scaffoldHints.columns(ReflectionHelpers.publicFieldNames(indexType));
-            }
-
-            if (indexType != null)
-                initColumnLinks(indexType, scaffoldHints);
-
+            initColumnLinks(indexType, scaffoldHints);
             initializeUrls(question, scaffoldHints.getRowActions());
         }
         return buildScaffoldTemplate(answer);
     }
 
-    String buildScaffoldTemplate(Answer answer) {
-        ScaffoldHints scaffoldHints = answer.getScaffoldHints();
+    protected String buildScaffoldTemplate(Answer answer) {
+        HtmlWriter writer = new HtmlWriter(3);
+
         String title = answer.getTitle();
         if (title == null)
-            title = ScaffoldingHelper.createPluralTitle(answer.getIndexData());
-        if (title == null) {
+            title = ScaffoldingHelper.createPluralTitle(answer.getIndexDataType());
+        if (title == null)
             title = "Empty collection";
-        }
-        HtmlWriter writer = new HtmlWriter(3);
+
         writer.startEndTags("<div id=\"hd\">", "<h1>" + title + "</h1>", "</div>");
         writer.startTags("<div id=\"bd\">", "<div class=\"yui-g\">");
+
+        ScaffoldHints scaffoldHints = answer.getScaffoldHints();
         if (answer.hasIndexData()) {
             writer.startTags("<table cellpadding=\"4\" border=\"1\">", "<thead>", "<tr>");
             for (TableColumn columnTitle : scaffoldHints.getTableColumns()) {
@@ -110,7 +108,7 @@ public class IndexScaffoldGenerator implements ScaffoldGenerator {
         return writer.toString();
     }
 
-    void initColumnLinks(Class<?> rowType, ScaffoldHints scaffoldHints) {
+    protected void initColumnLinks(Class<?> rowType, ScaffoldHints scaffoldHints) {
         Map<String, Class<?>> fields = ReflectionHelpers.publicFields(rowType);
         for (String fieldName : fields.keySet()) {
             Class<?> fieldType = fields.get(fieldName);
@@ -136,7 +134,7 @@ public class IndexScaffoldGenerator implements ScaffoldGenerator {
         }
     }
 
-    void initializeUrls(Question question, Iterable<WebAction> webActions) {
+    protected void initializeUrls(Question question, Iterable<WebAction> webActions) {
         for (WebAction webAction : webActions) {
             WebPage actionPage = webApp.getWebPageForController(webAction.getController());
             WebMethod actionMethod = actionPage.getWebMethodByName(webAction.getMethodName());
