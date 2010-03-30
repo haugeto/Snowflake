@@ -63,20 +63,16 @@ public class IndexScaffoldGenerator implements ScaffoldGenerator {
         }
         HtmlWriter writer = new HtmlWriter(3);
         writer.startEndTags("<div id=\"hd\">", "<h1>" + title + "</h1>", "</div>");
-        writer.startTag("<div id=\"bd\">");
-        writer.startTag("<div class=\"yui-g\">");
+        writer.startTags("<div id=\"bd\">", "<div class=\"yui-g\">");
         if (answer.hasIndexData()) {
-            writer.startTag("<table cellpadding=\"4\" border=\"1\">");
-            writer.startTag("<thead>");
-            writer.startTag("<tr>");
+            writer.startTags("<table cellpadding=\"4\" border=\"1\">", "<thead>", "<tr>");
             for (TableColumn columnTitle : scaffoldHints.getTableColumns()) {
                 writer.println("<th>" + columnTitle.getTitle() + "</th>");
             }
             if (!scaffoldHints.getRowActions().isEmpty()) {
                 writer.println("<th>Actions</th>");
             }
-            writer.endTag("</tr>");
-            writer.endTag("</thead>");
+            writer.endTags("</tr>", "</thead>");
             writer.startTag("<tbody>");
 
             String singularName = "entry";
@@ -94,28 +90,23 @@ public class IndexScaffoldGenerator implements ScaffoldGenerator {
                 writer.println(cellContents);
             }
             if (!scaffoldHints.getRowActions().isEmpty()) {
-                String cellContents = "<td>";
+                writer.startTag("<td>");
                 for (WebAction action : scaffoldHints.getRowActions()) {
                     // TODO: Infer the ID field more dynamically
-                    cellContents += "<a href=\"" + action.getUrl() + "/$!" + singularName + ".Id\">"
-                            + action.getDescription() + "</a> ";
+                    writer.println("<a href=\"" + action.getUrl() + "/$!" + singularName + ".Id\">"
+                            + action.getDescription() + "</a>");
                 }
-                cellContents += "</td>";
-                writer.println(cellContents);
+                writer.endTag("</td>");
             }
             writer.endTag("</tr>");
             writer.println("#end", false);
-            writer.endTag("</tbody>");
-            writer.endTag("</table>");
+            writer.endTags("</tbody>", "</table>");
         }
         for (WebAction pageAction : scaffoldHints.getPageActions()) {
-            writer.startTag("<p>");
-            writer.println("<a href=\"" + pageAction.getUrl() + "\">" + pageAction.getDescription() + "</a>");
-            writer.endTag("</p>");
+            writer.startEndTags("<p>", "<a href=\"" + pageAction.getUrl() + "\">" + pageAction.getDescription()
+                    + "</a>", "</p>");
         }
-        writer.endTag("</div>");
-
-        writer.endTag("</div>");
+        writer.endTags("</div>", "</div>");
         return writer.toString();
     }
 

@@ -12,7 +12,7 @@ import org.snowflake.Answer;
 import org.snowflake.WebAction;
 import org.snowflake.devserver.DevServer;
 
-public class IndexScaffoldTest {
+public class IndexScaffoldGeneratorTest {
 
     House house;
 
@@ -47,7 +47,6 @@ public class IndexScaffoldTest {
         answer.getScaffoldHints().setColumnLink("rooms", "/rooms/edit?houseId=$!entry.Id");
 
         String html = generator.buildScaffoldTemplate(answer);
-        System.out.println(html);
         assertTrue(html.contains("<h1>Houses</h1>"));
         assertTrue(html.contains("<table"));
         assertTrue(html.contains("<th>Name</th>"));
@@ -55,7 +54,7 @@ public class IndexScaffoldTest {
         assertTrue(html.contains("#foreach($entry in $houses)"));
         assertTrue(html.contains("<td>$!entry.Name</td>"));
         assertTrue(html.contains("<td><a href=\"/rooms/edit?houseId=$!entry.Id\">Rooms</a></td>"));
-        assertTrue(html.contains("<td><a href=\"/edit/$!entry.Id\">Edit</a> </td>"));
+        assertTrue(html.contains("<a href=\"/edit/$!entry.Id\">Edit</a>"));
         assertTrue(html.contains("#end"));
         assertTrue(html.contains("<a href=\"/add\">Add</a>"));
     }
