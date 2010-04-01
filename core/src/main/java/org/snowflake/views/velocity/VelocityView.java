@@ -50,10 +50,7 @@ public class VelocityView implements View {
             Template mainTemplate = velocityEngine.getTemplate(layoutTemplate);
             OutputStreamWriter mainContent = new OutputStreamWriter(out);
             VelocityContext layoutContext = new VelocityContext(viewContext);
-            layoutContext.put("view_css", answer.getViewCss());
             layoutContext.put("view_content", viewContent.toString());
-            layoutContext.put("view_title", answer.getTitle());
-            layoutContext.put("view_footer", answer.getFooter());
             mainTemplate.merge(layoutContext, mainContent);
             mainContent.flush();
         }

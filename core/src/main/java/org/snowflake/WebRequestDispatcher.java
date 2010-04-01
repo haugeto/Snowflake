@@ -54,7 +54,7 @@ public abstract class WebRequestDispatcher {
             Question indexQuestion = new Question();
             indexQuestion.setUrl(webPage.getBaseUrl());
             Answer indexAnswer = webApp.createAnswer(index);
-            indexAnswer.setViewCss(webRequest.getAnswer().getViewCss());
+            indexAnswer.setCss(webRequest.getAnswer().getCss());
             indexAnswer.putAll(webRequest.getAnswer().getTemplateVariables());
             webRequest.setWebMethod(index);
             webRequest.setAnswer(indexAnswer);
@@ -116,7 +116,7 @@ public abstract class WebRequestDispatcher {
         Question failedQuestion = failedRequest.getQuestion();
         WebMethod showFormMethod = webPage.findPrevious(this.webMethod);
         Answer answer = webApp.createAnswer(showFormMethod);
-        answer.setViewCss(failedRequest.getAnswer().getViewCss());
+        answer.setCss(failedRequest.getAnswer().getCss());
         answer.setFormData(failedQuestion.getParametersAsObjects(), showFormMethod.getReturnType());
         answer.setValidationMessages(validationException.getValidationMessages());
         Question question = new Question();

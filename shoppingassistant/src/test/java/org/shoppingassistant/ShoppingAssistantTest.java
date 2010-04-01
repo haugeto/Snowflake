@@ -55,7 +55,7 @@ public class ShoppingAssistantTest {
         ShoppingItem fromForm = new ShoppingItem();
         fromForm.setId(1L);
         fromForm.setDescription("new description");
-        shoppingAssistant.save(new Question(), fromForm);
+        shoppingAssistant.save(new Question(), new Answer(), fromForm);
         assertNotSame(shoppingItem, shoppingAssistant.shoppingItems.get(1L));
         assertEquals("new description", shoppingAssistant.shoppingItems.get(1L).getDescription());
     }
@@ -66,7 +66,7 @@ public class ShoppingAssistantTest {
         fromForm.setQuantity(0);
         fromForm.setDescription("");
         try {
-            shoppingAssistant.save(new Question(), fromForm);
+            shoppingAssistant.save(new Question(), new Answer(), fromForm);
             fail("ValidationException expected");
         } catch (ValidationException e) {
             assertTrue(e.getValidationMessages().containsKey("quantity"));
