@@ -34,7 +34,6 @@ public class IndexScaffoldGenerator implements ScaffoldGenerator {
         Class<?> indexType = answer.getIndexDataType();
         if (indexType != null) {
             if (WebMethod.isBuiltInType(indexType)) {
-                answer.setTitle("Result");
                 List<ModelObjectAdapter> adapters = new ArrayList<ModelObjectAdapter>();
                 for (Object rowObject : answer.getIndexData()) {
                     adapters.add(new ModelObjectAdapter(rowObject));

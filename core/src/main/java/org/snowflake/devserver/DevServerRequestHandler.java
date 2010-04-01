@@ -37,7 +37,7 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
 
     public void handle(HttpExchange exchange) throws IOException {
         Console.justify(exchange.getRequestMethod() + " " + exchange.getRequestURI(), "=> " + webMethod.toString());
-        Answer answer = webMethod.createAnswer(webApp.getDefaultViewCss());
+        Answer answer = webApp.createAnswer(webMethod);
         try {
             Question question = webPage.parseRequest(exchange.getRequestBody(), exchange.getRequestMethod(), exchange
                     .getRequestURI());

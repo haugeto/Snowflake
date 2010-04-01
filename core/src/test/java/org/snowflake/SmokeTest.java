@@ -28,7 +28,7 @@ public class SmokeTest {
 
     @Before
     public void setUp() throws Exception {
-        devServer = new DevServer("", DevServer.DEFAULT_PORT + 1);
+        devServer = new DevServer("Smoke Test", DevServer.DEFAULT_PORT + 1);
         devServer.registerController("smoketest", testPage);
         devServer.run();
     }
@@ -48,7 +48,7 @@ public class SmokeTest {
         testPage.testDataObjects.add(testDataObject);
         String content = invokeServer(request);
         assertNotNull(content);
-        System.out.println(content);
+        assertTrue(content.contains("<title>Smoke Test</title>"));
         assertTrue(content.contains("<table"));
         Map<String, Object> fieldValues = ReflectionHelpers.fieldValues(testDataObject);
         for (String fieldName : fieldValues.keySet()) {

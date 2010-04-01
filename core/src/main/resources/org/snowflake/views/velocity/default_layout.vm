@@ -12,9 +12,12 @@ $!view_scaffold
 	</head>
 	<body>
 		<div id="doc" class="yui-t7">
+#if ($view_message)
+            <p>$view_message</p>
+#end
 			$view_content
 			<div id="ft">
-				<p>Powered by Snowflake MVC</p>
+				$view_footer
 			</div>
 		</div>
 	</body>

@@ -53,6 +53,7 @@ public class VelocityView implements View {
             layoutContext.put("view_css", answer.getViewCss());
             layoutContext.put("view_content", viewContent.toString());
             layoutContext.put("view_title", answer.getTitle());
+            layoutContext.put("view_footer", answer.getFooter());
             mainTemplate.merge(layoutContext, mainContent);
             mainContent.flush();
         }

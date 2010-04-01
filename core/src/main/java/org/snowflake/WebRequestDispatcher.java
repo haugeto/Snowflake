@@ -53,7 +53,8 @@ public abstract class WebRequestDispatcher {
             WebMethod index = webMethod.getReuseViewMethod();
             Question indexQuestion = new Question();
             indexQuestion.setUrl(webPage.getBaseUrl());
-            Answer indexAnswer = index.createAnswer(webRequest.getAnswer().getViewCss());
+            Answer indexAnswer = webApp.createAnswer(index);
+            indexAnswer.setViewCss(webRequest.getAnswer().getViewCss());
             indexAnswer.putAll(webRequest.getAnswer().getTemplateVariables());
             webRequest.setWebMethod(index);
             webRequest.setAnswer(indexAnswer);
@@ -114,7 +115,8 @@ public abstract class WebRequestDispatcher {
             OutputStream responseBody) throws Exception {
         Question failedQuestion = failedRequest.getQuestion();
         WebMethod showFormMethod = webPage.findPrevious(this.webMethod);
-        Answer answer = showFormMethod.createAnswer(failedRequest.getAnswer().getViewCss());
+        Answer answer = webApp.createAnswer(showFormMethod);
+        answer.setViewCss(failedRequest.getAnswer().getViewCss());
         answer.setFormData(failedQuestion.getParametersAsObjects(), showFormMethod.getReturnType());
         answer.setValidationMessages(validationException.getValidationMessages());
         Question question = new Question();

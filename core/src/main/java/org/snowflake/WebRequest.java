@@ -58,15 +58,13 @@ public class WebRequest implements ArgumentProducer {
                     scaffoldHints.addPageAction(webPage.getController(), webMethod.getName());
             }
         }
-        answer.setTitle(createTitle());
-
         Object[] args = new ArgumentsBuilder(this).buildArguments(webMethod.getMethod());
         Object result;
         try {
             result = webMethod.getMethod().invoke(webPage.getController(), args);
         } catch (Exception e) {
             Console.println("\tException invoking \"" + webMethod.getMethod().toGenericString()
-                    + "\"\n\tArgument values:\n\t" + StringUtils.join(args, "\n\t\t") + "");
+                    + "\"\n\tArgs:\n\t" + StringUtils.join(args, "\n\t\t") + "");
 
             Throwable t;
             if (e instanceof InvocationTargetException) {
@@ -159,13 +157,6 @@ public class WebRequest implements ArgumentProducer {
             throw validationException;
     }
 
-    protected String createTitle() {
-        String title = webApp.getName();
-        if (webMethod.getType() != WebMethodType.INDEX) {
-            title += " - " + webMethod.getName();
-        }
-        return title;
-    }
 
     /**
      * Create the object that will be populated with data from HTML form

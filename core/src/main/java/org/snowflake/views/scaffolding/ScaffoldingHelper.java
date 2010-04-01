@@ -16,7 +16,7 @@ public class ScaffoldingHelper {
     public static String createPluralTitle(Class<?> target) {
         if (target == null)
             return null;
-        return createSingularTitle(target.getClass()) + "s";
+        return createSingularTitle(target) + "s";
     }
 
 }
