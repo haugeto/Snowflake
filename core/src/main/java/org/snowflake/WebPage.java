@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.snowflake.utils.HttpHelpers;
 import org.snowflake.utils.ReflectionHelpers;
 
@@ -59,7 +61,7 @@ public class WebPage {
                 WebMethod.validate(method, argumentTypesToIgnore);
                 WebMethod webMethod = new WebMethod(method);
                 webMethod.initializeArgs(argumentTypesToIgnore);
-                webMethod.initializeOperation();
+                webMethod.initializeType();
                 webMethod.initializeUrl(baseUrl);
                 webMethods.add(webMethod);
                 if (webMethod.getType() == WebMethodType.INDEX)
@@ -121,7 +123,17 @@ public class WebPage {
     void initializeShowSubmitFormCycle(Collection<WebMethod> allWebMethods) {
         for (Iterator<WebMethod> outer = allWebMethods.iterator(); outer.hasNext();) {
             WebMethod webMethod = outer.next();
+
+            WebMethod updateFormMethod = null;
+            WebMethod createFormMethod = null;
+
             if (WebMethodType.UPDATE_FORM == webMethod.getType() || WebMethodType.CREATE_FORM == webMethod.getType()) {
+
+                if (webMethod.getType() == WebMethodType.CREATE_FORM)
+                    createFormMethod = webMethod;
+                else if (webMethod.getType() == WebMethodType.UPDATE_FORM && !webMethod.reusesView())
+                    updateFormMethod = webMethod;
+
                 Class<?> returnType = webMethod.getReturnType();
                 if (!Collection.class.isAssignableFrom(returnType)) {
                     for (Iterator<WebMethod> inner = allWebMethods.iterator(); inner.hasNext();) {
@@ -132,6 +144,9 @@ public class WebPage {
                         }
                     }
                 }
+            }
+            if (updateFormMethod != null && createFormMethod != null) {
+                createFormMethod.setTemplateFileName(updateFormMethod.getTemplateFileName());
             }
         }
     }
@@ -181,7 +196,11 @@ public class WebPage {
     }
 
     public Set<WebMethod> getWebMethods() {
-        return new LinkedHashSet<WebMethod>(this.webMethods);
+        LinkedHashSet<WebMethod> result = new LinkedHashSet<WebMethod>(this.webMethods);
+        WebMethod defaultWebMethod = getDefaultWebMethod();
+        result.remove(defaultWebMethod);
+        result.add(defaultWebMethod);
+        return result;
     }
 
     public Object getController() {
@@ -257,5 +276,18 @@ public class WebPage {
 
     protected Question createQuestion(String httpMethod, URI requestURI) {
         return new Question();
+    }
+
+    public WebMethod getDefaultWebMethod() {
+        for (WebMethod webMethod : this.webMethods) {
+            if (webMethod.getType() == WebMethodType.INDEX)
+                return webMethod;
+        }
+        throw new IllegalStateException("No INDEX web method defined for controller " + controller);
+    }
+
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE).append("baseUrl", this.baseUrl).append(
+                "controller", this.controller).toString();
     }
 }

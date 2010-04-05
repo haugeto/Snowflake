@@ -9,8 +9,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
+import org.snowflake.devserver.StaticContentController;
+import org.snowflake.devserver.StaticContentView;
 import org.snowflake.fieldconverters.FieldConverter;
+import org.snowflake.utils.Console;
+import org.snowflake.utils.UrlHelpers;
+import org.snowflake.views.View;
 import org.snowflake.views.ViewFactory;
 import org.snowflake.views.scaffolding.FormFieldTemplateGenerator;
 import org.snowflake.views.velocity.VelocityViewFactory;
@@ -33,7 +39,7 @@ import org.snowflake.views.velocity.scaffolding.FormScaffoldGenerator;
  * 
  * @author haugeto
  */
-public abstract class WebApp {
+public class WebApp {
 
     public static final String SNOWFLAKE_CSS = "/static/org/snowflake/snowflake.css";
 
@@ -47,10 +53,12 @@ public abstract class WebApp {
 
     protected ViewFactory viewFactory = new VelocityViewFactory(this);
 
-    protected String name;
+    protected final String name;
 
-    protected String defaultViewCss = SNOWFLAKE_CSS;
-    
+    protected final String appBaseUrl;
+
+    protected final String defaultViewCss;
+
     protected String defaultFooter = "Powered by Snowflake MVC";
 
     public WebApp() {
@@ -58,11 +66,17 @@ public abstract class WebApp {
     }
 
     public WebApp(String name) {
-        this(name, Arrays.asList(FormScaffoldGenerator.DEFAULT_GENERATORS));
+        this(name, "", Arrays.asList(FormScaffoldGenerator.DEFAULT_GENERATORS));
     }
 
-    public WebApp(String name, Collection<FormFieldTemplateGenerator> formFieldTemplateGenerators) {
+    public WebApp(String name, String baseUrl) {
+        this(name, baseUrl, Arrays.asList(FormScaffoldGenerator.DEFAULT_GENERATORS));
+    }
+
+    public WebApp(String name, String baseUrl, Collection<FormFieldTemplateGenerator> formFieldTemplateGenerators) {
         this.name = name;
+        this.appBaseUrl = UrlHelpers.normalize(baseUrl);
+        this.defaultViewCss = baseUrl + SNOWFLAKE_CSS;
         this.fieldConverters.addAll(Arrays.asList(FieldConverter.DEFAULT_CONVERTERS));
         this.formFieldTemplateGenerators.addAll(formFieldTemplateGenerators);
     }
@@ -70,20 +84,23 @@ public abstract class WebApp {
     /**
      * Register a page as a part of the web application run by this Server.
      * 
-     * @param baseUrl
+     * @param urlPrefix
      *            Suffix for URLs to be handled by the given controller page
      * @param controller
      *            The client object to handle incoming HTTP requests. NB:
      *            Overloaded methods not supported yet.
      */
-    public void registerController(String baseUrl, Object controller) {
+    public WebPage registerController(String urlPrefix, Object controller) {
+        urlPrefix = UrlHelpers.normalize(urlPrefix);
         if (controller == null) {
             throw new IllegalArgumentException("controller cannot be null");
         }
-        if (baseUrl.startsWith("/static")) {
+        if (urlPrefix.startsWith("/static")) {
             throw new IllegalArgumentException("URL prefix \"/static\" is reserved for static content");
         }
-        registerController(new WebPage(controller, baseUrl));
+        WebPage webPage = new WebPage(controller, this.appBaseUrl + urlPrefix);
+        registerController(webPage);
+        return webPage;
     }
 
     public void registerController(WebPage webPage) {
@@ -118,6 +135,15 @@ public abstract class WebApp {
         this.viewFactory.setLayoutTemplate(classPathResource);
     }
 
+    public WebPage getWebPageForControllerClass(Class<?> controllerClass) {
+        for (WebPage webPage : webPages.values()) {
+            if (webPage.getController().getClass() == controllerClass) {
+                return webPage;
+            }
+        }
+        throw new IllegalArgumentException("Unregistered controller class: " + controllerClass);
+    }
+
     public WebPage getWebPageForController(Object controller) {
         for (WebPage webPage : webPages.values()) {
             if (webPage.getController().equals(controller)) {
@@ -131,8 +157,8 @@ public abstract class WebApp {
         return this.webPages.get(name);
     }
 
-    public Map<Object, WebPage> getWebPages() {
-        return new LinkedHashMap<Object, WebPage>(this.webPages);
+    public Set<WebPage> getWebPages() {
+        return new LinkedHashSet<WebPage>(this.webPages.values());
     }
 
     public void add(FormFieldTemplateGenerator generator) {
@@ -163,10 +189,6 @@ public abstract class WebApp {
         return this.name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     /**
      * Add a RequestInterceptor that will be given the chance to pre- and post
      * process a request to the application.
@@ -189,10 +211,6 @@ public abstract class WebApp {
         return defaultViewCss;
     }
 
-    public void setDefaultViewCss(String defaultViewCss) {
-        this.defaultViewCss = defaultViewCss;
-    }
-
     public WebPage pageForWebMethod(WebMethod webMethod) {
         for (WebPage webPage : this.webPages.values()) {
             if (webPage.getWebMethods().contains(webMethod)) {
@@ -213,7 +231,7 @@ public abstract class WebApp {
     }
 
     public WebMethod indexMethodForType(Class<?> fieldType) {
-        for (WebPage webPage : getWebPages().values()) {
+        for (WebPage webPage : getWebPages()) {
             Set<WebMethod> webMethods = webPage.getWebMethods();
             for (WebMethod webMethod : webMethods) {
                 if (webMethod.getHttpArgType() == fieldType) {
@@ -224,6 +242,74 @@ public abstract class WebApp {
             }
         }
         return null;
+    }
+
+    public Set<WebPage> initializeContexts() {
+        Set<WebPage> result = new LinkedHashSet<WebPage>();
+        result.addAll(initializeDynamicContentContexts());
+        result.addAll(initializeStaticContentContexts());
+        return result;
+    }
+
+    public Set<WebPage> initializeDynamicContentContexts() {
+        Console.center(name);
+        LinkedHashSet<WebPage> result = new LinkedHashSet<WebPage>();
+        for (WebPage webPage : webPages.values()) {
+            for (WebMethod webMethod : webPage.getWebMethods()) {
+               
+                String description = webPage.getController().getClass().getSimpleName() + "." + webMethod.getName();
+
+                if (webMethod.getNext() != null) {
+                    description += " (submits to " + webMethod.getNext().getName() + ")";
+                }
+                if (webMethod.reusesView()) {
+                    description += " (reuses view of " + webMethod.getReuseViewMethod().getName() + ")";
+                }
+                description += " " + webMethod.getHttpMethod();
+
+                Console.justify(webMethod.getUrl(), description, '.');
+                View view = viewFactory.createView(webMethod);
+                webMethod.setView(view);
+            }
+            result.add(webPage);
+        }
+        return result;
+    }
+
+    public Set<WebPage> initializeStaticContentContexts() {
+        LinkedHashSet<WebPage> result = new LinkedHashSet<WebPage>();
+        WebPage staticWebPage = new WebPage(new StaticContentController(), appBaseUrl + "/static");
+        staticWebPage.createWebMethods(new HashSet<Class<?>>());
+        webPages.put(staticWebPage.getBaseUrl(), staticWebPage);
+        for (WebMethod staticContentMethod : staticWebPage.getWebMethods()) {
+            staticContentMethod.setView(new StaticContentView());
+        }
+        result.add(staticWebPage);
+        return result;
+    }
+
+    public void initViewEngine() {
+        viewFactory.initialize();
+    }
+
+    public WebMethod resolveTargetMethod(String requestUrl) {
+        String url = UrlHelpers.normalize(requestUrl);
+        TreeMap<String, WebMethod> allWebMethods = allWebMethods();
+        for (String key : allWebMethods.descendingKeySet()) {
+            if (url.startsWith(key))
+                return allWebMethods.get(key);
+        }
+        return null;
+    }
+
+    public TreeMap<String, WebMethod> allWebMethods() {
+        Set<WebPage> webPages = getWebPages();
+        TreeMap<String, WebMethod> allWebMethods = new TreeMap<String, WebMethod>();
+        for (WebPage webPage : webPages) {
+            for (WebMethod webMethod : webPage.getWebMethods())
+                allWebMethods.put(webMethod.getUrl(), webMethod);
+        }
+        return allWebMethods;
     }
 
 }

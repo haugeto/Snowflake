@@ -2,7 +2,7 @@ package org.snowflake.devserver;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Executors;
 
 import org.snowflake.SnowflakeException;
@@ -10,7 +10,6 @@ import org.snowflake.WebApp;
 import org.snowflake.WebMethod;
 import org.snowflake.WebPage;
 import org.snowflake.utils.Console;
-import org.snowflake.views.View;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -50,7 +49,7 @@ public class DevServer extends WebApp {
         long startupTime = System.currentTimeMillis();
         Console.br();
         Console.center("Snowflake MVC");
-        viewFactory.initialize();
+        initViewEngine();
         beforeStart();
 
         InetSocketAddress addr = new InetSocketAddress(port);
@@ -58,8 +57,13 @@ public class DevServer extends WebApp {
             httpServer = HttpServer.create(addr, 0);
 
             Console.hr();
-            initializeDynamicContentContexts();
-            initializeStaticContentContexts();
+            Set<WebPage> allContexts = initializeContexts();
+
+            for (WebPage webPage : allContexts) {
+                for (WebMethod webMethod : webPage.getWebMethods()) {
+                    httpServer.createContext(webMethod.getUrl(), new DevServerRequestHandler(this, webPage, webMethod));
+                }
+            }
             Console.hr();
 
             httpServer.setExecutor(Executors.newCachedThreadPool());
@@ -87,38 +91,6 @@ public class DevServer extends WebApp {
                             + "\" of " + webMethod.getMethod().getDeclaringClass() + ")");
                 }
             }
-        }
-    }
-
-    protected void initializeDynamicContentContexts() {
-        for (WebPage webPage : webPages.values()) {
-            for (WebMethod webMethod : webPage.getWebMethods()) {
-                String description = webPage.getController().getClass().getSimpleName() + "." + webMethod.getName();
-
-                if (webMethod.getNext() != null) {
-                    description += " (submits to " + webMethod.getNext().getName() + ")";
-                }
-                if (webMethod.reusesView()) {
-                    description += " (reuses view of " + webMethod.getReuseViewMethod().getName() + ")";
-                }
-                description += " " + webMethod.getHttpMethod();
-
-                Console.justify(webMethod.getUrl(), description, '.');
-                View view = viewFactory.createView(webMethod);
-                webMethod.setView(view);
-                httpServer.createContext(webMethod.getUrl(), new DevServerRequestHandler(this, webPage, webMethod));
-            }
-        }
-    }
-
-    protected void initializeStaticContentContexts() {
-        WebPage staticWebPage = new WebPage(new StaticContentController(), "/static");
-        staticWebPage.createWebMethods(new HashSet<Class<?>>());
-        webPages.put("/static", staticWebPage);
-        for (WebMethod staticContentMethod : staticWebPage.getWebMethods()) {
-            staticContentMethod.setView(new StaticContentView());
-            httpServer.createContext(staticContentMethod.getUrl(), new DevServerRequestHandler(this, staticWebPage,
-                    staticContentMethod));
         }
     }
 

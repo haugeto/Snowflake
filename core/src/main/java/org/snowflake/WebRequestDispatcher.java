@@ -24,7 +24,7 @@ import org.snowflake.utils.Console;
  * 
  * @author haugeto
  */
-public abstract class WebRequestDispatcher {
+public class WebRequestDispatcher {
 
     protected final WebMethod webMethod;
 
@@ -47,23 +47,22 @@ public abstract class WebRequestDispatcher {
      *            Data about the response
      * @return The WebRequest that will handle rendering of the view
      */
-    protected void processController(WebRequest webRequest) throws Throwable {
+    public void processController(WebRequest webRequest) throws Throwable {
         webRequest.delegateToController();
         if (webMethod.reusesView()) {
-            WebMethod index = webMethod.getReuseViewMethod();
-            Question indexQuestion = new Question();
-            indexQuestion.setUrl(webPage.getBaseUrl());
-            Answer indexAnswer = webApp.createAnswer(index);
-            indexAnswer.setCss(webRequest.getAnswer().getCss());
-            indexAnswer.putAll(webRequest.getAnswer().getTemplateVariables());
-            webRequest.setWebMethod(index);
-            webRequest.setAnswer(indexAnswer);
-            webRequest.setQuestion(indexQuestion);
+            WebMethod reuseViewMethod = webMethod.getReuseViewMethod();
+            Question question = new Question();
+            question.setUrl(webPage.getBaseUrl());
+            Answer answer = webApp.createAnswer(reuseViewMethod);
+            answer.putAll(webRequest.getAnswer().getTemplateVariables());
+            webRequest.setWebMethod(reuseViewMethod);
+            webRequest.setAnswer(answer);
+            webRequest.setQuestion(question);
             webRequest.delegateToController();
         }
     }
 
-    protected void invokeBeforeInterceptors(Question question, Answer answer,
+    public void invokeBeforeInterceptors(Question question, Answer answer,
             Map<RequestInterceptor<?>, Object> customArgs) throws Exception {
         for (RequestInterceptor<?> requestInterceptor : webApp.getRequestInterceptors()) {
             customArgs.put(requestInterceptor, requestInterceptor.before(question, answer));
@@ -71,7 +70,7 @@ public abstract class WebRequestDispatcher {
     }
 
     @SuppressWarnings("unchecked")
-    protected void invokeAfterInterceptors(Question question, Answer answer,
+    public void invokeAfterInterceptors(Question question, Answer answer,
             Map<RequestInterceptor<?>, Object> customArgs) throws Exception {
         for (RequestInterceptor requestInterceptor : webApp.getRequestInterceptors()) {
             requestInterceptor.after(question, answer, customArgs.get(requestInterceptor));
@@ -92,7 +91,7 @@ public abstract class WebRequestDispatcher {
      * @param responseBody
      *            The response stream to the client
      */
-    protected void processViewOnSuccess(WebRequest webRequest, OutputStream responseBody) throws Exception {
+    public void processViewOnSuccess(WebRequest webRequest, OutputStream responseBody) throws Exception {
         webRequest.delegateToView(responseBody);
     }
 
@@ -101,7 +100,7 @@ public abstract class WebRequestDispatcher {
      * Process the view logic for an unsuccessful web request. Optional.
      * </p>
      */
-    protected void processViewOnValidationFailure(WebRequest failedRequest, OutputStream responseBody,
+    public void processViewOnValidationFailure(WebRequest failedRequest, OutputStream responseBody,
             ValidationException validationException) throws Exception {
         Map<String, String> errorMessages = validationException.getValidationMessages();
         for (String fieldName : errorMessages.keySet()) {
@@ -111,7 +110,7 @@ public abstract class WebRequestDispatcher {
         showFormWithValidationErrors(failedRequest, validationException, responseBody);
     }
 
-    protected void showFormWithValidationErrors(WebRequest failedRequest, ValidationException validationException,
+    public void showFormWithValidationErrors(WebRequest failedRequest, ValidationException validationException,
             OutputStream responseBody) throws Exception {
         Question failedQuestion = failedRequest.getQuestion();
         WebMethod showFormMethod = webPage.findPrevious(this.webMethod);
@@ -124,11 +123,5 @@ public abstract class WebRequestDispatcher {
         WebRequest showFormRequest = webApp.createWebRequest(webPage, showFormMethod, question, answer);
         showFormRequest.delegateToView(responseBody);
     }
-
-    protected WebMethod chooseOverloadedMethod(Question question) {
-        // TODO: Implement resolution of which overloaded method to choose. We
-        // need something like argument annotations to do this
-        return this.webMethod;
-    }
-
+  
 }

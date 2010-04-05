@@ -42,7 +42,6 @@ public class DevServerRequestHandler extends WebRequestDispatcher implements Htt
             Question question = webPage.parseRequest(exchange.getRequestBody(), exchange.getRequestMethod(), exchange
                     .getRequestURI());
             OutputStream responseBody = exchange.getResponseBody();
-            WebMethod webMethod = chooseOverloadedMethod(question);
             WebRequest webRequest = webApp.createWebRequest(webPage, webMethod, question, answer);
             Map<RequestInterceptor<?>, Object> customArgs = new HashMap<RequestInterceptor<?>, Object>();
             try {

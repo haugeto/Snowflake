@@ -9,6 +9,7 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.snowflake.SnowflakeException;
 import org.snowflake.WebApp;
 import org.snowflake.WebMethod;
+import org.snowflake.utils.Console;
 import org.snowflake.views.View;
 import org.snowflake.views.ViewFactory;
 
@@ -27,6 +28,7 @@ public class VelocityViewFactory extends ViewFactory {
 
     @Override
     public void initialize() {
+        Console.println("Initializing Velocity");
         velocityEngine = new VelocityEngine();
         Properties props = new Properties();
         props.setProperty("runtime.log.logsystem.class", "org.apache.velocity.runtime.log.NullLogSystem");

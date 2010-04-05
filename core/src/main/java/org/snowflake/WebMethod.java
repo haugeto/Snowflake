@@ -243,7 +243,7 @@ public class WebMethod implements Comparable<WebMethod> {
         setUrl(baseUrl + urlSuffix);
     }
 
-    public void initializeOperation() {
+    public void initializeType() {
         if (getType() == null) {
             if (getName().equalsIgnoreCase(WebMethodType.INDEX.name())) {
                 setType(WebMethodType.INDEX);
@@ -291,5 +291,9 @@ public class WebMethod implements Comparable<WebMethod> {
 
     public boolean isDefaultMethod() {
         return getType() == WebMethodType.INDEX;
+    }
+
+    public void setTemplateFileName(String templateFileName) {
+        this.templateFileName = templateFileName;
     }
 }
