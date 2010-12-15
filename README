@@ -17,3 +17,5 @@ You will need Maven to build Snowflake and download dependencies. Snowflake uses
 For more elaborate information about using Snowflake, please consult the wiki:
 http://wiki.github.com/haugeto/Snowflake/
 
+Snowflake is open source software licensed with Apache 2:
+http://www.apache.org/licenses/LICENSE-2.0.html
